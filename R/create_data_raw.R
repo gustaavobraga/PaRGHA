@@ -21,7 +21,7 @@
 #'     year_end = 2024,
 #'     month_end = 6,
 #'     state_abbr = "CE",
-#'     save_path = ".\\"
+#'     save_path = tempdir()
 #'  )
 #' }
 #'
@@ -81,9 +81,12 @@ create_data_raw <-
                                  as.is=TRUE, .id="file_id")
 
     data_rd = raw_SIH_RD %>%
-      dplyr::select('N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
-             "DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
-             'CNES','COMPLEX',"FINANC","MARCA_UTI","UTI_MES_TO")
+      dplyr::select("N_AIH","ANO_CMPT","MES_CMPT","PROC_REA",
+                    "CNES","COBRANCA","DIAS_PERM","ESPEC")
+    #'N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
+    #"DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
+    #'CNES','COMPLEX',"FINANC","MARCA_UTI","UTI_MES_TO",
+    #"ST_BLOQ","ST_MOT_BLO"
     #RJ-------------------------
     dbc_dir_path = stringr::str_glue("{save_path}\\file_DBC\\SIH-RJ")
     dbf_files <- list.files(dbc_dir_path,
@@ -98,10 +101,14 @@ create_data_raw <-
                                  as.is=TRUE, .id="file_id")
 
     data_rj = raw_SIH_RJ %>%
-      dplyr::select('N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
-             "DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
-             'CNES','COMPLEX',"FINANC","MARCA_UTI","UTI_MES_TO",
-             "ST_BLOQ","ST_MOT_BLO")
+      dplyr::select("N_AIH","ANO_CMPT","MES_CMPT","PROC_REA",
+                    "CNES","COBRANCA","DIAS_PERM","ESPEC" )
+
+    #'N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
+    #"DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
+    #'CNES','COMPLEX',"FINANC","MARCA_UTI","UTI_MES_TO",
+    #"ST_BLOQ","ST_MOT_BLO"
+
     #SP-------------------------
     dbc_dir_path = stringr::str_glue("{save_path}\\file_DBC\\SIH-SP")
     dbf_files <- list.files(dbc_dir_path,
@@ -120,6 +127,8 @@ create_data_raw <-
              "SP_ATOPROF","SP_VALATO","SP_COMPLEX","SP_FINANC",
              "SP_PF_CBO","IN_TP_VAL","SP_QT_PROC")
 
+            #SP_NAIH,SP_ATOPROF,SP_QT_PROC
+
 
     #Tratamento do Banco de Dados do RJ -----
     #ECLUINDO OS VALORES DUPLICADOS
@@ -130,7 +139,7 @@ create_data_raw <-
     #Excluir as AIH rejeitadas que foram aprovadas posteriormente RD
     #Removendo AIH aprovada
     data_rj = data_rj %>% dplyr::anti_join(data_rd,by=c('N_AIH'='N_AIH'))
-    #Tratamento do Banco de Dados do SP
+    #Tratamento do Banco de Dados do SP-----
     #Obter o total de procedimentos cirúrgicos registrados como
     #procedimentos secundários em AIH abertas com procedimentos
     #Subgrupo 0415 da Tabela SUS.
@@ -146,9 +155,7 @@ create_data_raw <-
     #consolidacao das informacoes-----
     data_rd$TIPO_AIH <- "Aprovada"
     data_rj$TIPO_AIH <- "Rejeitada"
-    base_combinada <- rbind(data_rd,
-                            data_rj %>%
-                              dplyr::select(-c(ST_BLOQ,ST_MOT_BLO)))
+    base_combinada <- rbind(data_rd,data_rj)
 
     #Cria a coluna TOTAL_CIRURGIAS_APRESENTADAS a partir da base data_cirurgias
     base_combinada2 = base_combinada %>%
@@ -165,27 +172,20 @@ create_data_raw <-
     #cria coluna SELECAO_MOTIVO_SAIDA, que contem sim ou não
     base_combinada2$SELECAO_MOTIVO_SAIDA <- ifelse(base_combinada2$COBRANCA >= 21 & base_combinada2$COBRANCA <= 28, "não", "sim")
 
-
     dados = base_combinada2 %>% dplyr::select(
       "TIPO_AIH",
       "N_AIH",
       "ANO_CMPT",
       "MES_CMPT",
-      "ESPEC",
-      "DT_INTER",
-      "DT_SAIDA",
-      "DIAS_PERM",
       "PROC_REA",
-      "CO_GRUPO_PROC",
-      "VAL_TOT",
-      "COBRANCA",
-      "SELECAO_MOTIVO_SAIDA",
       "CNES",
-      "COMPLEX",
-      "FINANC",
-      "MARCA_UTI",
-      "UTI_MES_TO",
-      "TOTAL_CIRURGIAS_APRESENTADAS")
+      "DIAS_PERM",
+      "CO_GRUPO_PROC",
+      "COBRANCA",
+      "TOTAL_CIRURGIAS_APRESENTADAS",
+      "SELECAO_MOTIVO_SAIDA",
+      "ESPEC")
+
 
     return(dados)
 }
