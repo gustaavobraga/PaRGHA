@@ -1,5 +1,5 @@
 
-#' Cria a base de dados será utilizada pelos indicadores
+#' Cria a base de dados que será utilizada pelos indicadores
 #'
 #' @description Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
 #'
