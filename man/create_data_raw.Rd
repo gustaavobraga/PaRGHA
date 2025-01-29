@@ -34,13 +34,13 @@ Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as 
 }
 \examples{
 \dontrun{
-  create_data_raw(
+  dados = create_data_raw(
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
     month_end = 6,
     state_abbr = "CE",
-    save_path = ".\\\\"
+    save_path = tempdir()
  )
 }
 

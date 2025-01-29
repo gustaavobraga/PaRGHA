@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   create_data_raw(
+#'   dados = create_data_raw(
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
