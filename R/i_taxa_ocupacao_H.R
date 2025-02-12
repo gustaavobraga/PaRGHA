@@ -1,16 +1,17 @@
 
-#' Número de Cirurgias Apresentadas por HUF
+#' Taxa de Ocupação Hospitalar por HUF
 #'
-#' @description Cria o indicador Número total de Cirurgias/Produção Hospitalar Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
+#' @description Cria o indicador Taxa de Ocupação Hospitalar por HUF Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
 #'
-#' @param data DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: CO_GRUPO_PROC, ANO_CMPT, MES_CMPT, CNES, TOTAL_CIRURGIAS_APRESENTADAS.
+#' @param data DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM
+#' @param data_cnes DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST
 #'
-#' @return Um DataFrame com o número de procedimentos apresentados de cada CNES, agrupado por ano e mês.
+#' @return Um DataFrame com a taxa de ocupação hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
 #'
-#' @examples \dontrun{i_taxa_ocupacao_H(data)}
+#' @examples \dontrun{i_taxa_ocupacao_H(data,data_cnes)}
 #'
 #' @export
-i_taxa_ocupacao_H <- function(){
+i_taxa_ocupacao_H <- function(data, data_cnes){
   `%>%` <- dplyr::`%>%`
 
   #Numero de dias de permanencia hospitalar
@@ -19,86 +20,32 @@ i_taxa_ocupacao_H <- function(){
     dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
     dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
     dplyr::summarise(
-      N_CIRURGIAS_APRE = sum( DIAS_PERM ),
+      N_dias_permanencia_hosp = sum( DIAS_PERM ),
       .groups = "keep"
     )
 
-  #Numero de dias de permanencia clinica
-  N_dias_perman_clinica_apre = data %>%
-    dplyr::mutate(across(c(CO_GRUPO_PROC, ESPEC), as.numeric))%>%
-    dplyr::filter(CO_GRUPO_PROC == 3) %>% #(Procedimentos clinicos)
-    dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
+  #número de leitos hospitalares, sem os leitos de Hospital-Dia
+  N_leitos_hosp_sem_leitos_hosp_dia = data_cnes %>%
+    dplyr::filter( TP_LEITO != "7" ) %>%
     dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
     dplyr::summarise(
-      N_CIRURGIAS_APRE = sum( DIAS_PERM ),
+      N_leitos_hosp_sem_leitos_hosp_dia = sum( QT_EXIST ),
       .groups = "keep"
     )
 
-  #Numero de dias de permanencia cirurgica”
-  N_dias_perman_cirurgica_apre = data %>%
-    dplyr::mutate(across(c(CO_GRUPO_PROC, ESPEC), as.numeric))%>%
-    dplyr::filter(CO_GRUPO_PROC == 4) %>% #(Procedimentos cirurgicos)
-    dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
-    dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
+  dados = N_dias_perman_hospitalar_apre %>%
+    dplyr::left_join(N_leitos_hosp_sem_leitos_hosp_dia,
+                     by = c("ANO_CMPT","MES_CMPT","CNES"))
+
+  i_taxa_ocupacao_H = dados %>%
     dplyr::summarise(
-      N_CIRURGIAS_APRE = sum( DIAS_PERM ),
+      N_dias_permanencia_hosp, N_leitos_hosp_sem_leitos_hosp_dia,
+      i_taxa_ocupacao_H =
+        N_dias_permanencia_hosp / (N_leitos_hosp_sem_leitos_hosp_dia*30),
       .groups = "keep"
     )
 
-  # numero total dos Motivos de saida hospitalar da Produção Hospitalar Apresentada
-  N_motivos_saida_hospitalar = data %>%
-    dplyr::mutate(ESPEC = as.numeric(ESPEC)) %>%
-    dplyr::filter(SELECAO_MOTIVO_SAIDA == 'sim') %>%
-    dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
-    dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
-    dplyr::summarise(
-      N_CIRURGIAS_APRE = length( DIAS_PERM ),
-      .groups = "keep"
-    )
-  #numero total dos Motivos de saida hospitalar clinica
-  N_motivos_saida_hospitalar_clinica = data %>%
-    dplyr::mutate(across(c(CO_GRUPO_PROC, ESPEC), as.numeric))%>%
-    dplyr::filter(CO_GRUPO_PROC == 3) %>%
-    dplyr::filter(SELECAO_MOTIVO_SAIDA == 'sim') %>%
-    dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
-    dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
-    dplyr::summarise(
-      N_CIRURGIAS_APRE = length( DIAS_PERM ),
-      .groups = "keep"
-    )
-  #numero total dos Motivos de saida hospitalar cirúrgica
-  N_motivos_saida_hospitalar_clinica = data %>%
-    dplyr::mutate(across(c(CO_GRUPO_PROC, ESPEC), as.numeric))%>%
-    dplyr::filter(CO_GRUPO_PROC == 4) %>%
-    dplyr::filter(SELECAO_MOTIVO_SAIDA == 'sim') %>%
-    dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
-    dplyr::group_by(ANO_CMPT,MES_CMPT,CNES) %>%
-    dplyr::summarise(
-      N_CIRURGIAS_APRE = length( DIAS_PERM ),
-      .groups = "keep"
-    )
-
-  #Obtendo base CNES
-  FaturaSUS.AmbHosp::download_cnes_files(year_start = 2024,
-                                         month_start = 3,
-                                         year_end = 2024,
-                                         month_end = 3,
-                                         newer=FALSE,
-                                         state_abbr = "CE")
-
-  dbc_dir_path = stringr::str_glue("{tempdir()}\\CNES\\ST")
-  dbf_files <- list.files(dbc_dir_path,
-                          pattern = "\\.dbc$",
-                          full.names = FALSE)
-
-  output_files_path <- stringr::str_glue("{dbc_dir_path}\\{dbf_files}")
-
-  #Carrega os dados RD
-  raw_SIH_RD <- purrr::map_dfr(output_files_path,
-                               read.dbc::read.dbc,
-                               as.is=TRUE, .id="file_id")
-  #write.csv(data,'./inst/extdata/dados.csv',row.names = FALSE)
-  return(raw_SIH_RD)
+  return(i_taxa_ocupacao_H)
 }
 
 

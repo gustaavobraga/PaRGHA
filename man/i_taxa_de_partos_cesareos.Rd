@@ -10,7 +10,7 @@ i_taxa_de_partos_cesareos(data)
 \item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ANO_CMPT, MES_CMPT, CNES, PROC_REA}
 }
 \value{
-Um DataFrame com a Taxa de partos Cesareos de cada CNES, agrupado por ano e mês.
+Um DataFrame com a Taxa de partos Cesareos de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
 }
 \description{
 Cria o indicador Taxa de partos Cesareos apresentados na produção hospitalar para cada estabelecimento de saúde (CNES), agrupados por ano e mês.

@@ -5,7 +5,7 @@
 #'
 #' @param data DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ANO_CMPT, MES_CMPT, CNES, DIAS_PERM, ESPEC
 #'
-#' @return Um DataFrame com o tempo medio de permanencia clinica de cada CNES, agrupado por ano e mês.
+#' @return Um DataFrame com o tempo medio de permanencia clinica de cada CNES, agrupado por ano e mês.  E as colunas que foram  utilizadas no calculo do indicador.
 #'
 #' @examples \dontrun{i_tempo_medio_permanencia_clinica(data)}
 #'
@@ -42,6 +42,7 @@ i_tempo_medio_permanencia_clinica <-
 
     i_tempo_medio_permanencia_clinica = TMP_clinica %>%
       dplyr::summarise(
+        num_dias_perman, num_motivos_saída_clinica,
         i_tempo_medio_permanencia_clinica = num_dias_perman/num_motivos_saída_clinica,
         .groups = "keep"
       )

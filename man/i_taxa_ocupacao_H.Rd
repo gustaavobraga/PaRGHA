@@ -2,20 +2,22 @@
 % Please edit documentation in R/i_taxa_ocupacao_H.R
 \name{i_taxa_ocupacao_H}
 \alias{i_taxa_ocupacao_H}
-\title{Número de Cirurgias Apresentadas por HUF}
+\title{Taxa de Ocupação Hospitalar por HUF}
 \usage{
-i_taxa_ocupacao_H()
+i_taxa_ocupacao_H(data, data_cnes)
 }
 \arguments{
-\item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: CO_GRUPO_PROC, ANO_CMPT, MES_CMPT, CNES, TOTAL_CIRURGIAS_APRESENTADAS.}
+\item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM}
+
+\item{data_cnes}{DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST}
 }
 \value{
-Um DataFrame com o número de procedimentos apresentados de cada CNES, agrupado por ano e mês.
+Um DataFrame com a taxa de ocupação hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
 }
 \description{
-Cria o indicador Número total de Cirurgias/Produção Hospitalar Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
+Cria o indicador Taxa de Ocupação Hospitalar por HUF Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
 }
 \examples{
-\dontrun{i_taxa_ocupacao_H(data)}
+\dontrun{i_taxa_ocupacao_H(data,data_cnes)}
 
 }

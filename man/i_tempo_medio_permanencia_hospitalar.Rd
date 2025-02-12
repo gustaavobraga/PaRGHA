@@ -10,7 +10,7 @@ i_tempo_medio_permanencia_hospitalar(data)
 \item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ANO_CMPT, MES_CMPT, CNES, DIAS_PERM, ESPEC}
 }
 \value{
-Um DataFrame com o tempo medio de permanencia hospitalar de cada CNES, agrupado por ano e mês.
+Um DataFrame com o tempo medio de permanencia hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
 }
 \description{
 Cria o indicador  Tempo Médio de Permanência Hospitalar para cada estabelecimento de saúde (CNES), agrupados por ano e mês.

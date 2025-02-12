@@ -60,6 +60,12 @@ create_data_raw_cnes <-
 
     data_CNES = raw_CNES_LT %>%
       dplyr::select("CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST")
+    #Formatando a coluna Data
+    data_CNES = data_CNES %>%
+      dplyr::mutate(
+        ANO_CMPT = stringr::str_sub(COMPETEN, 1, 4),
+        MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
+      ) %>% dplyr::select(-COMPETEN)
 
     return(data_CNES)
   }
