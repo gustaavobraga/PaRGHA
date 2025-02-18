@@ -82,7 +82,8 @@ create_data_raw <-
 
     data_rd = raw_SIH_RD %>%
       dplyr::select("N_AIH","ANO_CMPT","MES_CMPT","PROC_REA",
-                    "CNES","COBRANCA","DIAS_PERM","ESPEC")
+                    "CNES","COBRANCA","DIAS_PERM","ESPEC",
+                    "MARCA_UTI","UTI_MES_TO")
     #'N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
     #"DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
     #'CNES','COMPLEX',"FINANC","MARCA_UTI","UTI_MES_TO",
@@ -102,7 +103,8 @@ create_data_raw <-
 
     data_rj = raw_SIH_RJ %>%
       dplyr::select("N_AIH","ANO_CMPT","MES_CMPT","PROC_REA",
-                    "CNES","COBRANCA","DIAS_PERM","ESPEC" )
+                    "CNES","COBRANCA","DIAS_PERM","ESPEC",
+                    "MARCA_UTI","UTI_MES_TO")
 
     #'N_AIH','ANO_CMPT','MES_CMPT','ESPEC',"DT_INTER",
     #"DT_SAIDA",'PROC_REA','VAL_TOT',"COBRANCA",'DIAS_PERM',
@@ -184,7 +186,9 @@ create_data_raw <-
       "COBRANCA",
       "TOTAL_CIRURGIAS_APRESENTADAS",
       "SELECAO_MOTIVO_SAIDA",
-      "ESPEC")
+      "ESPEC",
+      "MARCA_UTI",
+      "UTI_MES_TO")
 
 
     return(dados)

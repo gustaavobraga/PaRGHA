@@ -19,7 +19,7 @@
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
-#'     month_end = 6,
+#'     month_end = 2,
 #'     state_abbr = "CE",
 #'     save_path = tempdir()
 #'  )
@@ -36,7 +36,7 @@ indicadores <-
 
     `%>%` <- dplyr::`%>%`
 
-    dados = create_data_raw(
+    data = create_data_raw(
       year_start = year_start,
       month_start = month_start,
       year_end = year_end,
@@ -55,24 +55,26 @@ indicadores <-
 
 
     #> Número de Cirurgias Apresentadas por HUF ----
-    i_1 = i_N_cirurgias_apresentadas(dados)
+    i_1 = i_N_cirurgias_apresentadas(data)
     #> Número de Internações Hospitalares por HUF ----
-    i_2 = i_N_internacoes_hospitalares(dados)
+    i_2 = i_N_internacoes_hospitalares(data)
     #> Taxa de partos Cesareos por HUF ----
-    i_3 = i_taxa_de_partos_cesareos(dados)
-
-    #> i_taxa_ocupacao_H ----
-    i_4 = i_taxa_ocupacao_H(dados,data_cnes)
-
+    i_3 = i_taxa_de_partos_cesareos(data)
+    #> Taxa de Ocupação Hospitalar
+    i_4 = i_taxa_ocupacao_H(data,data_cnes)
+    #> Taxa de Ocupação em UTI
+    i_5 = i_taxa_ocupacao_UTI(data,data_cnes)
     #> Tempo Medio de Permanencia Cirurgica por HUF ----
-    i_5 = i_tempo_medio_permanencia_cirurgica(dados)
+    i_6 = i_tempo_medio_permanencia_cirurgica(data)
     #> Tempo Medio de Permanencia Clinica por HUF ----
-    i_6 = i_tempo_medio_permanencia_clinica(dados)
+    i_7 = i_tempo_medio_permanencia_clinica(data)
     #> Tempo Medio de Permanencia Hospitalar por HUF ----
-    i_7 = i_tempo_medio_permanencia_hospitalar(dados)
+    i_8 = i_tempo_medio_permanencia_hospitalar(data)
+    #> Giro de Leito da Produção Hospitalar por HUF ----
+    i_9 = i_giro_de_leito(data,data_cnes)
 
     # Lista com as suas tabelas
-    tabelas = list(i_1, i_2, i_3, i_4, i_5, i_6, i_7)
+    tabelas = list(i_1,i_3,i_2,i_4,i_5,i_6,i_7,i_8,i_9)
 
     # full join de todas as tabelas com base em ano, mes e CNES
     tabela_indicadores = purrr::reduce(tabelas, dplyr::full_join,

@@ -38,7 +38,7 @@ Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as 
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
-    month_end = 6,
+    month_end = 2,
     state_abbr = "CE",
     save_path = tempdir()
  )
