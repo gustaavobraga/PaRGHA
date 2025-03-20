@@ -9,7 +9,6 @@ indicadores(
   month_start,
   year_end,
   month_end,
-  state_abbr,
   save_path = tempdir()
 )
 }
@@ -22,8 +21,6 @@ indicadores(
 
 \item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
 
-\item{state_abbr}{string ou vetor de strings. Sigla da Unidade Federativa}
-
 \item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().}
 }
 \value{
@@ -35,11 +32,10 @@ Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as 
 \examples{
 \dontrun{
   dados = indicadores(
-    year_start = 2024,
+    year_start = 2020,
     month_start = 1,
     year_end = 2024,
-    month_end = 2,
-    state_abbr = "CE",
+    month_end = 12,
     save_path = tempdir()
  )
 }

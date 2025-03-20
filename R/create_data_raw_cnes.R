@@ -20,7 +20,7 @@
 #'     month_start = 1,
 #'     year_end = 2024,
 #'     month_end = 1,
-#'     state_abbr = "CE",
+#'     state_abbr = "all",
 #'     save_path = tempdir()
 #'  )
 #' }
@@ -37,7 +37,7 @@ create_data_raw_cnes <-
     `%>%` <- dplyr::`%>%`
 
     #Obtendo base CNES-LT .dbc
-    FaturaSUS.AmbHosp::download_cnes_files(
+    PaPAHR::download_cnes_files(
       year_start = year_start,
       month_start = month_start,
       year_end = year_end,
