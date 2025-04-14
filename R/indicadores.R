@@ -15,7 +15,7 @@
 #' @examples
 #' \dontrun{
 #'   dados = indicadores(
-#'     year_start = 2024,
+#'     year_start = 2021,
 #'     month_start = 1,
 #'     year_end = 2024,
 #'     month_end = 12,
@@ -33,7 +33,19 @@ indicadores <-
 
     `%>%` <- dplyr::`%>%`
 
-    data = create_data_raw(
+    # Se as bases ja tiverem sido criadas, basta carrega-las."
+    # data_raw = read.csv('./inst/extdata/Dados/base_final/DF_Final.csv',
+    #                     colClasses = c("CNES" = "character",
+    #                                    "ANO_CMPT" = "character",
+    #                                    "MES_CMPT" = "character"))
+    # data_cnes = read.csv('./inst/extdata/Dados/base_final/data_cnes.csv',
+    #                      colClasses = c("CNES" = "character",
+    #                                     "ANO_CMPT" = "character",
+    #                                     "MES_CMPT" = "character",
+    #                                     "TP_LEITO" = "character",
+    #                                     "CODLEITO" = "character"))
+
+    data_raw = create_data_raw(
       year_start = year_start,
       month_start = month_start,
       year_end = year_end,
@@ -45,20 +57,22 @@ indicadores <-
       month_start = month_start,
       year_end = year_end,
       month_end = month_end,
+      type_data = "LT",
       save_path = save_path
     )
 
+    data = create_data(data_raw,data_cnes)
 
     #> Número de Cirurgias Apresentadas por HUF ----
-    i_1 = i_N_cirurgias_apresentadas(data)
+    i_1 = i_N_cirurgias_apresentadas(data_raw)
     #> Número de Internações Hospitalares por HUF ----
-    i_2 = i_N_internacoes_hospitalares(data)
+    i_2 = i_N_internacoes_hospitalares(data_raw)
     #> Taxa de partos Cesareos por HUF ----
     i_3 = i_taxa_de_partos_cesareos(data)
     #> Taxa de Ocupação Hospitalar
-    i_4 = i_taxa_ocupacao_H(data,data_cnes)
+    i_4 = i_taxa_ocupacao_H(data)
     #> Taxa de Ocupação em UTI
-    i_5 = i_taxa_ocupacao_UTI(data,data_cnes)
+    i_5 = i_taxa_ocupacao_UTI(data)
     #> Tempo Medio de Permanencia Cirurgica por HUF ----
     i_6 = i_tempo_medio_permanencia_cirurgica(data)
     #> Tempo Medio de Permanencia Clinica por HUF ----
@@ -66,7 +80,7 @@ indicadores <-
     #> Tempo Medio de Permanencia Hospitalar por HUF ----
     i_8 = i_tempo_medio_permanencia_hospitalar(data)
     #> Giro de Leito da Produção Hospitalar por HUF ----
-    i_9 = i_giro_de_leito(data,data_cnes)
+    i_9 = i_giro_de_leito(data)
 
     #---------------------------------
     #Cria uma tabela onde cada coluna é um indicador
@@ -77,13 +91,16 @@ indicadores <-
     tabela_indicadores = purrr::reduce(tabelas, dplyr::full_join,
                                by = c("ANO_CMPT", "MES_CMPT", "CNES"))
 
+    tabela_indicadores_num_den = dplyr::left_join(tabela_indicadores, data,
+                              by = c("ANO_CMPT", "MES_CMPT", "CNES"))
 
+    #ADD a coluna com o nome dos Hospitais
     caminho_pasta <- system.file("extdata", package = "TCC")
     path = stringr::str_glue(
       "{caminho_pasta}\\CNES_EBSERH.rds")
     CNES_EBSERH <- readRDS(path)
 
-    tabela_indicadores = tabela_indicadores %>%
+    tabela_indicadores_num_den = tabela_indicadores_num_den %>%
       dplyr::left_join(CNES_EBSERH, by = c("CNES" = "Codigo_CNES"))
 
     #Salva a base em um diretorio
@@ -95,8 +112,8 @@ indicadores <-
     # )
 
 
-    if (dir.exists(here::here("data-raw"))) {
-      unlink(here::here("data-raw"), recursive = TRUE)
-    }
-    return(tabela_indicadores)
+    # if (dir.exists(here::here("data-raw"))) {
+    #   unlink(here::here("data-raw"), recursive = TRUE)
+    # }
+    return(tabela_indicadores_num_den)
   }

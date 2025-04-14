@@ -32,7 +32,7 @@ Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as 
 \examples{
 \dontrun{
   dados = indicadores(
-    year_start = 2020,
+    year_start = 2021,
     month_start = 1,
     year_end = 2024,
     month_end = 12,

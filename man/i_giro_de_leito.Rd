@@ -4,12 +4,10 @@
 \alias{i_giro_de_leito}
 \title{Giro de Leito da Produção Hospitalar por HUF}
 \usage{
-i_giro_de_leito(data, data_cnes)
+i_giro_de_leito(data)
 }
 \arguments{
 \item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM}
-
-\item{data_cnes}{DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST}
 }
 \value{
 Um DataFrame com o Giro de Leito da Produção Hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
@@ -18,6 +16,6 @@ Um DataFrame com o Giro de Leito da Produção Hospitalar de cada CNES, agrupado
 Cria o indicador Giro de Leito da Produção Hospitalar por HUF Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
 }
 \examples{
-\dontrun{i_giro_de_leito(data,data_cnes)}
+\dontrun{i_giro_de_leito(data)}
 
 }

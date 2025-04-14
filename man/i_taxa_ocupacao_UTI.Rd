@@ -4,12 +4,10 @@
 \alias{i_taxa_ocupacao_UTI}
 \title{Taxa de Ocupação em UTI por HUF}
 \usage{
-i_taxa_ocupacao_UTI(data, data_cnes)
+i_taxa_ocupacao_UTI(data)
 }
 \arguments{
 \item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM}
-
-\item{data_cnes}{DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST}
 }
 \value{
 Um DataFrame com a taxa de ocupação hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.

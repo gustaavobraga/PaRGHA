@@ -14,35 +14,8 @@ i_taxa_de_partos_cesareos <-
   function(data){
     `%>%` <- dplyr::`%>%`
 
-    partos_cesareos = c("0411010026","0411010034","0411010042")
-
-    partos = c("0411010026","0411010034","0411010042",
-               "0310010039","0310010047","0310010055")
-
-    #Numero de partos cesareos
-    num_partos_cesareos = data %>%
-      dplyr::group_by( ANO_CMPT,MES_CMPT,CNES ) %>%
-      dplyr::filter(PROC_REA %in% partos_cesareos) %>%
+    i_taxa_de_partos_cesareos = data %>%
       dplyr::summarise(
-        num_partos_cesareos = length(CNES),
-        .groups = "keep"
-      )
-
-    #Numero total de partos
-    num_partos_total = data %>%
-      dplyr::group_by( ANO_CMPT,MES_CMPT,CNES ) %>%
-      dplyr::filter(PROC_REA %in% partos) %>%
-      dplyr::summarise(
-        num_partos_total = length(CNES),
-        .groups = "keep"
-      )
-
-    partos = num_partos_total %>%
-      dplyr::left_join(num_partos_cesareos, by = c("ANO_CMPT","MES_CMPT","CNES"))
-
-    i_taxa_de_partos_cesareos = partos %>%
-      dplyr::summarise(
-        num_partos_cesareos, num_partos_total,
         i_taxa_de_cesarea = (num_partos_cesareos/num_partos_total)*100,
         .groups = "keep"
       )

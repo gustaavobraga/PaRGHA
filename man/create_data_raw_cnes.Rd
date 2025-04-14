@@ -10,6 +10,7 @@ create_data_raw_cnes(
   year_end,
   month_end,
   state_abbr = "all",
+  type_data = "LT",
   save_path = tempdir()
 )
 }
@@ -24,10 +25,12 @@ create_data_raw_cnes(
 
 \item{state_abbr}{string ou vetor de strings. Sigla da Unidade Federativa}
 
+\item{type_data}{string. O padrao e "LT". Valores aceitos ("LT", "HB", "EQ"). O tipo da base de dados do CNES que sera baixado.}
+
 \item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().}
 }
 \value{
-Um DataFrame com os dados de RD, RJ e SP
+Um DataFrame com os dados dos estabelecimentos de saude
 }
 \description{
 Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
@@ -38,8 +41,9 @@ Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as 
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
-    month_end = 1,
+    month_end = 2,
     state_abbr = "all",
+    type_data = "LT",
     save_path = tempdir()
  )
 }
