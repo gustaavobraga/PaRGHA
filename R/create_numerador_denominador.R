@@ -1,16 +1,16 @@
-#' Taxa de Ocupação Hospitalar por HUF
+#' Numerador e Denominador dos Indicadores
 #'
-#' @description Cria o indicador Taxa de Ocupação Hospitalar por HUF Apresentadas para cada estabelecimento de saúde (CNES), agrupados por ano e mês.
+#' @description Cria o numerador e o denominador necessários para o cálculo dos indicadores.
 #'
 #' @param data DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM
 #' @param data_cnes DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST
 #'
-#' @return Um DataFrame com a taxa de ocupação hospitalar de cada CNES, agrupado por ano e mês. E as colunas que foram  utilizadas no calculo do indicador.
+#' @return Um DataFrame com os numeradores e denominadores dos indicadores
 #'
-#' @examples \dontrun{create_data(data,data_cnes)}
+#' @examples \dontrun{create_numerador_denominador(data,data_cnes)}
 #'
 #' @export
-create_data <- function(data,data_cnes){
+create_numerador_denominador <- function(data,data_cnes){
   `%>%` <- dplyr::`%>%`
 
   partos_cesareos = c("0411010026","0411010034","0411010042")
@@ -74,7 +74,7 @@ create_data <- function(data,data_cnes){
     )
 
   output = dplyr::left_join(output, output_cnes,
-                          by = c("ANO_CMPT", "MES_CMPT", "CNES"))
+                            by = c("ANO_CMPT", "MES_CMPT", "CNES"))
   return(output)
 
 }

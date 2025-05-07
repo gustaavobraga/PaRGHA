@@ -1,7 +1,7 @@
 
-#' Cria a base de dados do CNES que será utilizada pelos indicadores
+#' Download dos dados do CNES que será utilizada pelos indicadores
 #'
-#' @description Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+#' @description Realiza o download dos dados do CNES para um dos sistemas especificados (LT = Leitos, HB = Habilitações, EQ = Equipamentos) e seleciona apenas as colunas necessárias.
 #'
 #' @param year_start numeric. Ano inicial para o download dos dados, no formato yyyy.
 #' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.

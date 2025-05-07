@@ -1,7 +1,7 @@
 
-#' Cria a base de dados será utilizada pelos indicadores
+#' Cria a base de dados que será utilizada para o cálculo dos indicadores.
 #'
-#' @description Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+#' @description Lê as bases de dados geradas pela função download_data, realiza o pré-processamento necessário e unifica todas as informações em uma única base consolidada.
 #'
 #' @param year_start numeric. Ano inicial para o download dos dados, no formato yyyy.
 #' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.
@@ -103,7 +103,6 @@ create_data_raw <-
       "ESPEC",
       "MARCA_UTI",
       "UTI_MES_TO")
-
 
     return(dados)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_data_raw.R
 \name{create_data_raw}
 \alias{create_data_raw}
-\title{Cria a base de dados será utilizada pelos indicadores}
+\title{Cria a base de dados que será utilizada para o cálculo dos indicadores.}
 \usage{
 create_data_raw(
   year_start,
@@ -27,12 +27,12 @@ create_data_raw(
 Um DataFrame com os dados de RD, RJ e SP
 }
 \description{
-Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+Lê as bases de dados geradas pela função download_data, realiza o pré-processamento necessário e unifica todas as informações em uma única base consolidada.
 }
 \examples{
 \dontrun{
   dados = create_data_raw(
-    year_start = 2021,
+    year_start = 2024,
     month_start = 1,
     year_end = 2024,
     month_end = 12,

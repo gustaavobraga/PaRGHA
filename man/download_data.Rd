@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_data.R
 \name{download_data}
 \alias{download_data}
-\title{Downloads DBC data from the specified healthcare systems: 'SIA-PA', 'SIH-RD', 'SIH-RJ', or 'SIH-SP'}
+\title{Download, Filtragem e Armazenamento de Dados dos Estabelecimentos EBSERH nos Sistemas SIH}
 \usage{
 download_data(
   year_start,
@@ -24,7 +24,7 @@ download_data(
 \item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é ".\\".}
 }
 \description{
-Realiza o download de arquivos DBC dos sistemas de saúde especificados ('SIA-PA', 'SIH-RD', 'SIH-RJ' ou 'SIH-SP') e os salva em um diretório definido pelo usuário, criando automaticamente uma pasta chamada 'file_DBC'.
+Realiza o download dos arquivos DBC dos sistemas SIH-RD, SIH-RJ e SIH-SP para todos os estados que possuem pelo menos um estabelecimento da EBSERH, considerando os meses especificados pelo usuário. Após o download, os arquivos são carregados e filtrados para selecionar apenas os estabelecimentos da EBSERH e as variáveis relevantes. Em seguida, os dados filtrados são salvos em uma base no diretório indicado por save_path.
 }
 \examples{
 \dontrun{

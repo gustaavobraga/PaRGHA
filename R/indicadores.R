@@ -61,7 +61,7 @@ indicadores <-
       save_path = save_path
     )
 
-    data = create_data(data_raw,data_cnes)
+    data = create_numerador_denominador(data_raw,data_cnes)
 
     #> Número de Cirurgias Apresentadas por HUF ----
     i_1 = i_N_cirurgias_apresentadas(data_raw)
@@ -110,7 +110,6 @@ indicadores <-
     #   row.names = FALSE,
     #   fileEncoding = "UTF-8"
     # )
-
 
     # if (dir.exists(here::here("data-raw"))) {
     #   unlink(here::here("data-raw"), recursive = TRUE)

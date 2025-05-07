@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   equipamentos(
+#'   dados = equipamentos(
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_data_raw_cnes.R
 \name{create_data_raw_cnes}
 \alias{create_data_raw_cnes}
-\title{Cria a base de dados do CNES que será utilizada pelos indicadores}
+\title{Download dos dados do CNES que será utilizada pelos indicadores}
 \usage{
 create_data_raw_cnes(
   year_start,
@@ -33,7 +33,7 @@ create_data_raw_cnes(
 Um DataFrame com os dados dos estabelecimentos de saude
 }
 \description{
-Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+Realiza o download dos dados do CNES para um dos sistemas especificados (LT = Leitos, HB = Habilitações, EQ = Equipamentos) e seleciona apenas as colunas necessárias.
 }
 \examples{
 \dontrun{
