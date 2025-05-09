@@ -25,7 +25,7 @@
 #'
 #' @export
 indicadores <-
-  function(year_start,
+  function(data_SIH,
            month_start,
            year_end,
            month_end,
@@ -45,13 +45,6 @@ indicadores <-
     #                                     "TP_LEITO" = "character",
     #                                     "CODLEITO" = "character"))
 
-    data_raw = create_data_raw(
-      year_start = year_start,
-      month_start = month_start,
-      year_end = year_end,
-      month_end = month_end,
-      save_path = save_path
-    )
     data_cnes = create_data_raw_cnes(
       year_start = year_start,
       month_start = month_start,
@@ -61,26 +54,9 @@ indicadores <-
       save_path = save_path
     )
 
-    data = create_numerador_denominador(data_raw,data_cnes)
+    data = create_numerador_denominador(data_SIH,data_cnes)
 
-    #> Número de Cirurgias Apresentadas por HUF ----
-    i_1 = i_N_cirurgias_apresentadas(data_raw)
-    #> Número de Internações Hospitalares por HUF ----
-    i_2 = i_N_internacoes_hospitalares(data_raw)
-    #> Taxa de partos Cesareos por HUF ----
-    i_3 = i_taxa_de_partos_cesareos(data)
-    #> Taxa de Ocupação Hospitalar
-    i_4 = i_taxa_ocupacao_H(data)
-    #> Taxa de Ocupação em UTI
-    i_5 = i_taxa_ocupacao_UTI(data)
-    #> Tempo Medio de Permanencia Cirurgica por HUF ----
-    i_6 = i_tempo_medio_permanencia_cirurgica(data)
-    #> Tempo Medio de Permanencia Clinica por HUF ----
-    i_7 = i_tempo_medio_permanencia_clinica(data)
-    #> Tempo Medio de Permanencia Hospitalar por HUF ----
-    i_8 = i_tempo_medio_permanencia_hospitalar(data)
-    #> Giro de Leito da Produção Hospitalar por HUF ----
-    i_9 = i_giro_de_leito(data)
+    indicadores = create_indicador()
 
     #---------------------------------
     #Cria uma tabela onde cada coluna é um indicador

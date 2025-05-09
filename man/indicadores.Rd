@@ -4,17 +4,9 @@
 \alias{indicadores}
 \title{Retorna a base de dados com todos os indicadores}
 \usage{
-indicadores(
-  year_start,
-  month_start,
-  year_end,
-  month_end,
-  save_path = tempdir()
-)
+indicadores(data_SIH, month_start, year_end, month_end, save_path = tempdir())
 }
 \arguments{
-\item{year_start}{numeric. Ano inicial para o download dos dados, no formato yyyy.}
-
 \item{month_start}{numeric. Mês inicial para o download dos dados, no formato mm.}
 
 \item{year_end}{numeric. Ano final para o download dos dados, no formato yyyy.}
@@ -22,6 +14,8 @@ indicadores(
 \item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
 
 \item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().}
+
+\item{year_start}{numeric. Ano inicial para o download dos dados, no formato yyyy.}
 }
 \value{
 Um DataFrame com os indicadores

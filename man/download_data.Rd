@@ -2,13 +2,14 @@
 % Please edit documentation in R/download_data.R
 \name{download_data}
 \alias{download_data}
-\title{Download, Filtragem e Armazenamento de Dados dos Estabelecimentos EBSERH nos Sistemas SIH}
+\title{Download dos dados do DataSUS}
 \usage{
 download_data(
   year_start,
   month_start,
   year_end,
   month_end,
+  state_abbr,
   save_path = tempdir()
 )
 }
@@ -21,10 +22,12 @@ download_data(
 
 \item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
 
+\item{state_abbr}{string ou vetor de strings. Sigla da Unidade Federativa.}
+
 \item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é ".\\".}
 }
 \description{
-Realiza o download dos arquivos DBC dos sistemas SIH-RD, SIH-RJ e SIH-SP para todos os estados que possuem pelo menos um estabelecimento da EBSERH, considerando os meses especificados pelo usuário. Após o download, os arquivos são carregados e filtrados para selecionar apenas os estabelecimentos da EBSERH e as variáveis relevantes. Em seguida, os dados filtrados são salvos em uma base no diretório indicado por save_path.
+Realiza o download automático dos arquivos DBC dos sistemas SIH-RD, SIH-RJ e SIH-SP, de acordo com os estados especificados em state_abbr e os meses definidos pelo usuário. Os arquivos obtidos são salvos no diretório indicado pelo argumento save_path.
 }
 \examples{
 \dontrun{
@@ -33,6 +36,7 @@ Realiza o download dos arquivos DBC dos sistemas SIH-RD, SIH-RJ e SIH-SP para to
     month_start = 1,
     year_end = 2023,
     month_end = 3,
+    state_abbr = "CE",
     save_path = tempdir()
   )
 }

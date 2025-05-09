@@ -23,7 +23,7 @@ Cria a base de dados das Habilitacoes dos estabelecimentos EBSERH
 }
 \examples{
 \dontrun{
-  habilitacoes(
+  dados = habilitacoes(
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
