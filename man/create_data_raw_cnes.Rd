@@ -37,7 +37,7 @@ Realiza o download dos dados do CNES para um dos sistemas especificados (LT = Le
 }
 \examples{
 \dontrun{
-  create_data_raw_cnes(
+  dados = create_data_raw_cnes(
     year_start = 2024,
     month_start = 1,
     year_end = 2024,

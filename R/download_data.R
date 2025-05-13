@@ -32,7 +32,7 @@ download_data <- function(year_start,
 
   #Remove arquivos DBC antigos antes de iniciar o download
   SIS = c("RD", "RJ", "SP")
-  dirs = stringr::str_glue("{save_path}/file_DBC/SIH-{SIS}")
+  dirs <- fs::path(save_path, "file_DBC", glue::glue("SIH-{SIS}"))
   purrr::walk(dirs, ~{
     if (dir.exists(.x)) {
       unlink(list.files(.x, full.names = TRUE), recursive = TRUE)

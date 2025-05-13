@@ -47,7 +47,7 @@ load_data <- function(information_system,
   )
 
   tempo_inicio <- system.time({
-    # Caminho para os arquivos .dbc
+    # Lista os nomes dos arquivos DBC que estao no diretorio save_path
     dbc_dir_path = fs::path(save_path, "file_DBC", information_system)
     dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
@@ -58,9 +58,9 @@ load_data <- function(information_system,
       files_chunks = PaPAHR::chunk(dbf_files)
     }
 
-
     # Função para processar cada chunk
     processa_chunk = function(chunk, n) {
+      # Ler os arquivos do chunk
       raw_SIH = purrr::map_dfr(chunk[[1]],
                                read.dbc::read.dbc,
                                as.is = TRUE, .id = "file_id")

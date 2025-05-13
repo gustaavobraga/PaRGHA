@@ -2,22 +2,22 @@
 % Please edit documentation in R/create_numerador_denominador.R
 \name{create_numerador_denominador}
 \alias{create_numerador_denominador}
-\title{Numerador e Denominador dos Indicadores}
+\title{Cria os Numerador e Denominador dos Indicadores}
 \usage{
-create_numerador_denominador(data, data_cnes)
+create_numerador_denominador(data_SIH, data_CNES)
 }
 \arguments{
-\item{data}{DataFrame obtido pela função x. Deve conter no mínimo as seguintes variáveis: ESPEC, ANO_CMPT, MES_CMPT, CNES, DIAS_PERM}
+\item{data_SIH}{DataFrame. Objeto retornado pela funcao get_data()}
 
-\item{data_cnes}{DataFrame obtido pela função create_data_raw_cnes(). Deve conter no mínimo as seguintes variáveis: TP_LEITO, ANO_CMPT, MES_CMPT, CNES, QT_EXIST}
+\item{data_CNES}{DataFrame. Objeto retornado pela funcao create_data_raw_cnes()}
 }
 \value{
 Um DataFrame com os numeradores e denominadores dos indicadores
 }
 \description{
-Cria o numerador e o denominador necessários para o cálculo dos indicadores.
+Cria o numerador e o denominador necessarios para o calculo dos indicadores.
 }
 \examples{
-\dontrun{create_numerador_denominador(data,data_cnes)}
+\dontrun{create_numerador_denominador(data_SIH,data_CNES)}
 
 }

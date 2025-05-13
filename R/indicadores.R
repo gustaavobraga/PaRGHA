@@ -1,13 +1,10 @@
 
-#' Retorna a base de dados com todos os indicadores
+#' Cria os indicadores dos estabelecimentos da EBSERH
 #'
-#' @description Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+#' @description Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e do CNES passados como parametro.
 #'
-#' @param year_start numeric. Ano inicial para o download dos dados, no formato yyyy.
-#' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.
-#' @param year_end numeric. Ano final para o download dos dados, no formato yyyy.
-#' @param month_end numeric. Mês final para o download dos dados, no formato mm.
-#' @param save_path String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().
+#' @param data_SIH DataFrame. Objeto retornado pela funcao get_data()
+#' @param data_CNES DataFrame. Objeto retornado pela funcao create_data_raw_cnes()
 #'
 #' @return Um DataFrame com os indicadores
 #'
@@ -15,80 +12,56 @@
 #' @examples
 #' \dontrun{
 #'   dados = indicadores(
-#'     year_start = 2021,
-#'     month_start = 1,
-#'     year_end = 2024,
-#'     month_end = 12,
-#'     save_path = tempdir()
-#'  )
+#'     data_SIH = data_SIH,
+#'     data_cnes = data_CNES
+#'   )
 #' }
 #'
 #' @export
-indicadores <-
-  function(data_SIH,
-           month_start,
-           year_end,
-           month_end,
-           save_path = tempdir()){
+indicadores <- function(data_SIH,data_CNES){
+  `%>%` <- dplyr::`%>%`
 
-    `%>%` <- dplyr::`%>%`
+  #Cria as variaveis que serao utilizadas no calculo dos indicadores
+  data = create_numerador_denominador(data_SIH, data_CNES)
 
-    # Se as bases ja tiverem sido criadas, basta carrega-las."
-    # data_raw = read.csv('./inst/extdata/Dados/base_final/DF_Final.csv',
-    #                     colClasses = c("CNES" = "character",
-    #                                    "ANO_CMPT" = "character",
-    #                                    "MES_CMPT" = "character"))
-    # data_cnes = read.csv('./inst/extdata/Dados/base_final/data_cnes.csv',
-    #                      colClasses = c("CNES" = "character",
-    #                                     "ANO_CMPT" = "character",
-    #                                     "MES_CMPT" = "character",
-    #                                     "TP_LEITO" = "character",
-    #                                     "CODLEITO" = "character"))
-
-    data_cnes = create_data_raw_cnes(
-      year_start = year_start,
-      month_start = month_start,
-      year_end = year_end,
-      month_end = month_end,
-      type_data = "LT",
-      save_path = save_path
+  #Realiza o calculo dos indicadores
+  indicadores = data %>%
+    dplyr::summarise(
+      i_taxa_de_cesarea = (num_partos_cesareos / num_partos_total) * 100,
+      i_taxa_ocupacao_H =
+        num_dias_perman_hosp / (N_leitos_hosp_sem_leitos_hosp_dia * 30),
+      i_taxa_ocupacao_UTI = N_dias_em_UTI / (N_leitos_UTI * 30),
+      i_tempo_medio_permanencia_cirurgica =
+        num_dias_perman_cirurgica / num_motivos_saida_cirurgica,
+      i_tempo_medio_permanencia_clinica =
+        num_dias_perman_clinica / num_motivos_saida_clinica,
+      i_tempo_medio_permanencia_hospitalar =
+        num_dias_perman_hosp / num_motivos_saida_hosp,
+      i_giro_de_leito = num_motivos_saida_hosp / N_leitos_hosp_sem_leitos_hosp_dia,
+      .groups = "keep"
     )
 
-    data = create_numerador_denominador(data_SIH,data_cnes)
+  tabela_indicadores_num_den = dplyr::left_join(indicadores, data,
+                                                by = c("ANO_CMPT", "MES_CMPT", "CNES"))
 
-    indicadores = create_indicador()
+  #ADD a coluna com o nome dos Hospitais
+  caminho_pasta = system.file("extdata", package = "TCC")
+  path = stringr::str_glue("{caminho_pasta}\\CNES_EBSERH.rds")
+  CNES_EBSERH = readRDS(path)
 
-    #---------------------------------
-    #Cria uma tabela onde cada coluna é um indicador
-    # Lista com as suas tabelas
-    tabelas = list(i_1,i_3,i_2,i_4,i_5,i_6,i_7,i_8,i_9)
+  tabela_indicadores_num_den = tabela_indicadores_num_den %>%
+    dplyr::left_join(CNES_EBSERH, by = c("CNES" = "Codigo_CNES"))
 
-    # full join de todas as tabelas com base em ano, mes e CNES
-    tabela_indicadores = purrr::reduce(tabelas, dplyr::full_join,
-                               by = c("ANO_CMPT", "MES_CMPT", "CNES"))
+  #Salva a base em um diretorio
+  # write.csv(
+  #   tabela_indicadores_empilhada,
+  #   "./inst/extdata/dados2.csv",
+  #   row.names = FALSE,
+  #   fileEncoding = "UTF-8"
+  # )
 
-    tabela_indicadores_num_den = dplyr::left_join(tabela_indicadores, data,
-                              by = c("ANO_CMPT", "MES_CMPT", "CNES"))
-
-    #ADD a coluna com o nome dos Hospitais
-    caminho_pasta <- system.file("extdata", package = "TCC")
-    path = stringr::str_glue(
-      "{caminho_pasta}\\CNES_EBSERH.rds")
-    CNES_EBSERH <- readRDS(path)
-
-    tabela_indicadores_num_den = tabela_indicadores_num_den %>%
-      dplyr::left_join(CNES_EBSERH, by = c("CNES" = "Codigo_CNES"))
-
-    #Salva a base em um diretorio
-    # write.csv(
-    #   tabela_indicadores_empilhada,
-    #   "./inst/extdata/dados2.csv",
-    #   row.names = FALSE,
-    #   fileEncoding = "UTF-8"
-    # )
-
-    # if (dir.exists(here::here("data-raw"))) {
-    #   unlink(here::here("data-raw"), recursive = TRUE)
-    # }
-    return(tabela_indicadores_num_den)
-  }
+  # if (dir.exists(here::here("data-raw"))) {
+  #   unlink(here::here("data-raw"), recursive = TRUE)
+  # }
+  return(tabela_indicadores_num_den)
+}

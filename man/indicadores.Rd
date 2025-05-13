@@ -2,36 +2,27 @@
 % Please edit documentation in R/indicadores.R
 \name{indicadores}
 \alias{indicadores}
-\title{Retorna a base de dados com todos os indicadores}
+\title{Cria os indicadores dos estabelecimentos da EBSERH}
 \usage{
-indicadores(data_SIH, month_start, year_end, month_end, save_path = tempdir())
+indicadores(data_SIH, data_CNES)
 }
 \arguments{
-\item{month_start}{numeric. Mês inicial para o download dos dados, no formato mm.}
+\item{data_SIH}{DataFrame. Objeto retornado pela funcao get_data()}
 
-\item{year_end}{numeric. Ano final para o download dos dados, no formato yyyy.}
-
-\item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
-
-\item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().}
-
-\item{year_start}{numeric. Ano inicial para o download dos dados, no formato yyyy.}
+\item{data_CNES}{DataFrame. Objeto retornado pela funcao create_data_raw_cnes()}
 }
 \value{
 Um DataFrame com os indicadores
 }
 \description{
-Realiza o download dos arquivos DBC ('SIH-RD', 'SIH-RJ' e 'SIH-SP'), combina as três bases de dados em uma única estrutura, seleciona apenas as variáveis relevantes, cria novas variáveis e retorna uma base de dados contendo exclusivamente as variáveis que serão utilizadas nos cálculos dos indicadores
+Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e do CNES passados como parametro.
 }
 \examples{
 \dontrun{
   dados = indicadores(
-    year_start = 2021,
-    month_start = 1,
-    year_end = 2024,
-    month_end = 12,
-    save_path = tempdir()
- )
+    data_SIH = data_SIH,
+    data_cnes = data_CNES
+  )
 }
 
 }

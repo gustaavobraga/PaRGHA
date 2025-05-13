@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   create_data_raw_cnes(
+#'   dados = create_data_raw_cnes(
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
@@ -38,6 +38,17 @@ create_data_raw_cnes <-
            save_path = tempdir()){
 
     `%>%` <- dplyr::`%>%`
+    CNES_EBSERH = c(
+      "0000396","0002534","0003816","0004731","0009709",
+      "0010510","0012505","0027049","2006197","2017644",
+      "2146339","2146355","2146371","2206595","2218798",
+      "2244306","2252694","2295415","2332981","2338424",
+      "2384299","2400243","2409208","2481286","2504502",
+      "2561492","2640244","2653982","2655411","2676060",
+      "2694751","2707675","2710935","2726653","3157245",
+      "3285391","3432076","3654826","4014111","4044916",
+      "5586348","6042414","6568343"
+    )
 
     #Obtendo base CNES-LT .dbc
     PaPAHR::download_cnes_files(
@@ -82,5 +93,6 @@ create_data_raw_cnes <-
         MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
       ) %>% dplyr::select(-COMPETEN)
 
+    data_CNES = dplyr::filter(data_CNES, CNES %in% CNES_EBSERH)
     return(data_CNES)
   }
