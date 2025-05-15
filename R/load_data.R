@@ -19,8 +19,6 @@
 #' @export
 load_data <- function(information_system,
                       save_path = tempdir()){
-  save_path=tempdir()
-
   `%>%` <- dplyr::`%>%`
   CNES_EBSERH = c(
     "0000396","0002534","0003816","0004731","0009709",
@@ -51,17 +49,12 @@ load_data <- function(information_system,
     dbc_dir_path = fs::path(save_path, "file_DBC", information_system)
     dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-    # Chunk dos arquivos
-    if(information_system=="SIH-SP"){
-      files_chunks = PaPAHR::chunk(dbf_files,"SP")
-    } else{
-      files_chunks = PaPAHR::chunk(dbf_files)
-    }
+    files_chunks = chunk(dbf_files)
 
     # Função para processar cada chunk
     processa_chunk = function(chunk, n) {
       # Ler os arquivos do chunk
-      raw_SIH = purrr::map_dfr(chunk[[1]],
+      raw_SIH = purrr::map_dfr(chunk,
                                read.dbc::read.dbc,
                                as.is = TRUE, .id = "file_id")
 
@@ -81,6 +74,8 @@ load_data <- function(information_system,
       # Caminho para salvar o chunk processado
       output_path = fs::path(dbc_dir_path, sprintf("output_%s_chunk_%d.rds", information_system, n))
       saveRDS(raw_SIH, file = output_path)
+      rm(raw_SIH)
+      gc()
     }
 
     # Processamento sequencial

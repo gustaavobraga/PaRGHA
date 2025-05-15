@@ -15,7 +15,7 @@ indicadores(data_SIH, data_CNES)
 Um DataFrame com os indicadores
 }
 \description{
-Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e do CNES passados como parametro.
+Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e do CNES-LT passados como parametro.
 }
 \examples{
 \dontrun{

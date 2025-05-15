@@ -14,17 +14,17 @@
 #'
 #' @examples
 #' \dontrun{
-#'   dados = get_data(
+#'   data_SIH = get_data_SIH(
 #'     year_start = 2021,
 #'     month_start = 1,
 #'     year_end = 2024,
 #'     month_end = 12,
 #'     save_path = tempdir()
-#'  )
+#'   )
 #' }
 #'
 #' @export
-get_data <- function(
+get_data_SIH <- function(
     year_start,
     month_start,
     year_end,
@@ -51,6 +51,9 @@ get_data <- function(
   data_rj = load_data("SIH-RJ")
   data_sp = load_data("SIH-SP")
 
+  # data_rd = readRDS("./R/data_rd.rds")
+  # data_rj = readRDS("./R/data_rj.rds")
+  # data_sp = readRDS("./R/data_sp.rds")
 
   #Tratamento do Banco de Dados do RJ -----
   #ECLUINDO OS VALORES DUPLICADOS

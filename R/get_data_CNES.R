@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   dados = create_data_raw_cnes(
+#'   dados = get_data_CNES(
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
@@ -28,7 +28,7 @@
 #' }
 #'
 #' @export
-create_data_raw_cnes <-
+get_data_CNES <-
   function(year_start,
            month_start,
            year_end,
@@ -50,49 +50,54 @@ create_data_raw_cnes <-
       "5586348","6042414","6568343"
     )
 
-    #Obtendo base CNES-LT .dbc
-    PaPAHR::download_cnes_files(
-      year_start = year_start,
-      month_start = month_start,
-      year_end = year_end,
-      month_end = month_end,
-      newer=F,
-      state_abbr = state_abbr,
-      type_data=type_data)
+    tempo_inicio_CNES <- system.time({
+      #Obtendo base CNES-LT .dbc
+      PaPAHR::download_cnes_files(
+        year_start = year_start,
+        month_start = month_start,
+        year_end = year_end,
+        month_end = month_end,
+        newer=F,
+        state_abbr = state_abbr,
+        type_data=type_data)
+    })
+    cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
+
+    tempo_inicio <- system.time({
+      dbc_dir_path = stringr::str_glue("{save_path}\\CNES\\{type_data}")
+      dbf_files <- list.files(dbc_dir_path,
+                              pattern = "\\.dbc$",
+                              full.names = FALSE)
+
+      output_files_path <- stringr::str_glue("{dbc_dir_path}\\{dbf_files}")
+
+      #Carrega os dados
+      raw_CNES <- purrr::map_dfr(output_files_path,
+                                   read.dbc::read.dbc,
+                                   as.is=TRUE, .id="file_id")
 
 
-    dbc_dir_path = stringr::str_glue("{save_path}\\CNES\\{type_data}")
-    dbf_files <- list.files(dbc_dir_path,
-                            pattern = "\\.dbc$",
-                            full.names = FALSE)
+      #Selecionar as colunas com base no valor de type_datab
+      data_CNES <- switch(
+        type_data,
+        "LT" = raw_CNES %>% dplyr::select(
+          "CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"
+        ),
+        "HB" = raw_CNES %>% dplyr::select("SGRUPHAB", "CNES", "COMPETEN"),
+        "EQ" = raw_CNES %>% dplyr::select(
+          "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"
+        ),
+      )
 
-    output_files_path <- stringr::str_glue("{dbc_dir_path}\\{dbf_files}")
+      #Formatando a coluna Data
+      data_CNES = data_CNES %>%
+        dplyr::mutate(
+          ANO_CMPT = stringr::str_sub(COMPETEN, 1, 4),
+          MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
+        ) %>% dplyr::select(-COMPETEN)
 
-    #Carrega os dados
-    raw_CNES <- purrr::map_dfr(output_files_path,
-                                 read.dbc::read.dbc,
-                                 as.is=TRUE, .id="file_id")
-
-
-    #Selecionar as colunas com base no valor de type_datab
-    data_CNES <- switch(
-      type_data,
-      "LT" = raw_CNES %>% dplyr::select(
-        "CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"
-      ),
-      "HB" = raw_CNES %>% dplyr::select("SGRUPHAB", "CNES", "COMPETEN"),
-      "EQ" = raw_CNES %>% dplyr::select(
-        "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"
-      ),
-    )
-
-    #Formatando a coluna Data
-    data_CNES = data_CNES %>%
-      dplyr::mutate(
-        ANO_CMPT = stringr::str_sub(COMPETEN, 1, 4),
-        MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
-      ) %>% dplyr::select(-COMPETEN)
-
-    data_CNES = dplyr::filter(data_CNES, CNES %in% CNES_EBSERH)
+      data_CNES = dplyr::filter(data_CNES, CNES %in% CNES_EBSERH)
+    })
+    cat("Tempo para ler os dados CNES: ",round(tempo_inicio[3]/60,4), "minutos\n")
     return(data_CNES)
   }
