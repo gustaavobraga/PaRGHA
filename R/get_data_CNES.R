@@ -34,7 +34,7 @@ get_data_CNES <-
            year_end,
            month_end,
            state_abbr = "all",
-           type_data = "LT",
+           type_data = "EQ",
            save_path = tempdir()){
 
     `%>%` <- dplyr::`%>%`
@@ -50,54 +50,67 @@ get_data_CNES <-
       "5586348","6042414","6568343"
     )
 
-    tempo_inicio_CNES <- system.time({
-      #Obtendo base CNES-LT .dbc
-      PaPAHR::download_cnes_files(
-        year_start = year_start,
-        month_start = month_start,
-        year_end = year_end,
-        month_end = month_end,
-        newer=F,
-        state_abbr = state_abbr,
-        type_data=type_data)
-    })
-    cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
+    # tempo_inicio_CNES <- system.time({
+    #   #Obtendo base CNES-LT .dbc
+    #   PaPAHR::download_cnes_files(
+    #     year_start = year_start,
+    #     month_start = month_start,
+    #     year_end = year_end,
+    #     month_end = month_end,
+    #     newer=F,
+    #     state_abbr = state_abbr,
+    #     type_data=type_data)
+    # })
+    # cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
 
     tempo_inicio <- system.time({
-      dbc_dir_path = stringr::str_glue("{save_path}\\CNES\\{type_data}")
-      dbf_files <- list.files(dbc_dir_path,
-                              pattern = "\\.dbc$",
-                              full.names = FALSE)
+      dbc_dir_path = fs::path(save_path, "CNES", type_data)
+      dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-      output_files_path <- stringr::str_glue("{dbc_dir_path}\\{dbf_files}")
+      files_chunks = chunk_fast(dbf_files)
+      length(files_chunks)
 
-      #Carrega os dados
-      raw_CNES <- purrr::map_dfr(output_files_path,
-                                   read.dbc::read.dbc,
-                                   as.is=TRUE, .id="file_id")
+      # Função para processar cada chunk
+      processa_chunk = function(chunk, n) {
+        # Ler os arquivos do chunk
+        raw_CNES = purrr::map_dfr(chunk,
+                                  read.dbc::read.dbc,
+                                  as.is = TRUE,
+                                  .id = "file_id")
+        # Filtragem por estabelecimentos EBSERH
+        raw_CNES = dplyr::filter(raw_CNES, CNES %in% CNES_EBSERH)
 
+        #Selecionar as colunas com base no valor de type_datab
+        raw_CNES <- switch(
+          type_data,
+          "LT" = raw_CNES %>% dplyr::select(
+            "CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"),
+          "HB" = raw_CNES %>% dplyr::select("SGRUPHAB", "CNES", "COMPETEN"),
+          "EQ" = raw_CNES %>% dplyr::select(
+            "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"),
+        )
 
-      #Selecionar as colunas com base no valor de type_datab
-      data_CNES <- switch(
-        type_data,
-        "LT" = raw_CNES %>% dplyr::select(
-          "CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"
-        ),
-        "HB" = raw_CNES %>% dplyr::select("SGRUPHAB", "CNES", "COMPETEN"),
-        "EQ" = raw_CNES %>% dplyr::select(
-          "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"
-        ),
-      )
+        output_path = fs::path(dbc_dir_path,
+                               sprintf("output_CNES-%s_chunk_%d.rds", type_data, n))
+        saveRDS(raw_CNES, file = output_path)
+        rm(raw_CNES)
+        gc()
+      }
+      # Processamento sequencial
+      purrr::walk2(files_chunks, seq_along(files_chunks), processa_chunk)
+
+      # União dos arquivos .rds gerados
+      outputCNES = fs::dir_ls(dbc_dir_path, glob = "*.rds") %>%
+        purrr::map_dfr(readRDS)
 
       #Formatando a coluna Data
-      data_CNES = data_CNES %>%
+      outputCNES = outputCNES %>%
         dplyr::mutate(
           ANO_CMPT = stringr::str_sub(COMPETEN, 1, 4),
           MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
-        ) %>% dplyr::select(-COMPETEN)
-
-      data_CNES = dplyr::filter(data_CNES, CNES %in% CNES_EBSERH)
+        ) %>%
+        dplyr::select(ANO_CMPT, MES_CMPT, dplyr::everything(), -COMPETEN)
     })
     cat("Tempo para ler os dados CNES: ",round(tempo_inicio[3]/60,4), "minutos\n")
-    return(data_CNES)
+    return(outputCNES)
   }
