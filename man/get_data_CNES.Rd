@@ -10,7 +10,7 @@ get_data_CNES(
   year_end,
   month_end,
   state_abbr = "all",
-  type_data = "EQ",
+  type_data = "LT",
   save_path = tempdir()
 )
 }

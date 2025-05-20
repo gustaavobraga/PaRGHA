@@ -19,7 +19,7 @@ equipamentos(year_start, month_start, year_end, month_end)
 Um DataFrame com os dados dos equipamentos
 }
 \description{
-Cria a base de dados dOs equipamentos dos estabelecimentos EBSERH
+Cria a base de dados dos equipamentos dos estabelecimentos EBSERH
 }
 \examples{
 \dontrun{
@@ -27,7 +27,7 @@ Cria a base de dados dOs equipamentos dos estabelecimentos EBSERH
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
-    month_end = 1
+    month_end = 2
  )
 }
 

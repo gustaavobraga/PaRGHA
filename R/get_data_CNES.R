@@ -34,7 +34,7 @@ get_data_CNES <-
            year_end,
            month_end,
            state_abbr = "all",
-           type_data = "EQ",
+           type_data = "LT",
            save_path = tempdir()){
 
     `%>%` <- dplyr::`%>%`
@@ -50,19 +50,92 @@ get_data_CNES <-
       "5586348","6042414","6568343"
     )
 
-    # tempo_inicio_CNES <- system.time({
-    #   #Obtendo base CNES-LT .dbc
-    #   PaPAHR::download_cnes_files(
-    #     year_start = year_start,
-    #     month_start = month_start,
-    #     year_end = year_end,
-    #     month_end = month_end,
-    #     newer=F,
-    #     state_abbr = state_abbr,
-    #     type_data=type_data)
-    # })
-    # cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
+    tempo_inicio_CNES <- system.time({
+      type_data = toupper(trimws(type_data))
 
+      if ( !(type_data %in% c("ST","LT","HB","EQ")) ){
+        stop("O valor passado no par\u00e2metro type_data n\u00e3o \u00e9 aceito.\n")
+      }
+
+      #Define a URL de acordo com o type_data
+      base_url <-
+        switch(
+          type_data,
+          "ST" = "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/ST/",
+          "LT" = "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/LT/",
+          "HB" = "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/HB/",
+          "EQ" = "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/EQ/",
+        )
+
+      #Cria os diretorios onde vao ser salvos os microdados
+      output_dir <- fs::path(save_path, "CNES")
+      if (!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+
+      output_dir <- fs::path(output_dir, type_data)
+      dir.create(output_dir)
+
+      #Tentar conectar e ler os dados com tratamento de erros
+      dir_files <- tryCatch({
+        #Estabelece conexao
+        connection <- curl::curl(base_url)
+
+        #Garante que a conexao seja fechada mesmo em caso de erro
+        on.exit(close(connection), add = TRUE)
+
+        # Leitura e tratamento dos arquivos encontrados
+        readLines(connection) %>%
+          stringr::str_sub(start = -12) %>%
+          tibble::as_tibble_col(column_name = "file_name") %>%
+          dplyr::mutate(
+            state = stringr::str_sub(file_name, 3, 4),
+            publication_date = suppressWarnings(
+              lubridate::ym(stringr::str_sub(file_name, 5, 8))
+            ),
+            format_file = stringr::str_sub(file_name, -3)
+          ) %>%
+          dplyr::filter(format_file == "dbc" & !is.na(publication_date))
+
+      }, warning = function(w) {
+        message("Aviso ao acessar o FTP do DATASUS: ", conditionMessage(w))
+        return(NULL)
+      }, error = function(e) {
+        message("Erro ao acessar o FTP do DATASUS: ", conditionMessage(e))
+        return(NULL)
+      })
+
+      #Filtra so os microdados que estao no intervalo desejado
+      publication_date_start <-
+        lubridate::ym(stringr::str_glue("{year_start}-{month_start}"))
+      publication_date_end <-
+        lubridate::ym(stringr::str_glue("{year_end}-{month_end}"))
+
+      dir_files <- dir_files %>%
+        dplyr::filter(
+          publication_date >= publication_date_start &
+            publication_date <= publication_date_end
+        )
+
+      #Filtra os UF
+      if (!("all" %in% state_abbr)) {
+        dir_files <- dir_files %>%
+          dplyr::filter(state %in% state_abbr)
+      }
+
+      #Defini as URLs de cada arquivo a ser baixado
+      files_name <- dplyr::pull(dir_files, file_name)
+      download_files_url <- fs::path(base_url, files_name)
+      output_files_path <- fs::path(output_dir, files_name)
+
+      #Download dos microdados
+      purrr::walk2(download_files_url, output_files_path, curl::curl_download)
+    })
+    cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
+
+
+    #Leitura dos microdados
+    #-----------------------------------------
     tempo_inicio <- system.time({
       dbc_dir_path = fs::path(save_path, "CNES", type_data)
       dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")

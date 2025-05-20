@@ -27,7 +27,7 @@ Cria a base de dados dos leitos dos estabelecimentos EBSERH
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
-    month_end = 1
+    month_end = 2
  )
 }
 

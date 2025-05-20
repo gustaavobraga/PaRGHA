@@ -2,7 +2,7 @@
 
 #' Cria a base de dados dos Equipamentos
 #'
-#' @description Cria a base de dados dOs equipamentos dos estabelecimentos EBSERH
+#' @description Cria a base de dados dos equipamentos dos estabelecimentos EBSERH
 #'
 #' @param year_start numeric. Ano inicial para o download dos dados, no formato yyyy.
 #' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.
@@ -18,7 +18,7 @@
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
-#'     month_end = 1
+#'     month_end = 2
 #'  )
 #' }
 #'
@@ -30,13 +30,14 @@ equipamentos <-
            month_end) {
     `%>%` <- dplyr::`%>%`
 
-    estados = c(
+    estados <- c(
       "PE","SE","BA","MS","DF","RJ","MG","AL","AM",
       "RS","PA","GO","PR","PB","RN","CE","MT","MA",
       "SC","PI","AP","TO","ES","SP"
     )
 
-    data_cnes = get_data_CNES(
+    #Donwload dos microdados CNES-EQ
+    data_cnes <- get_data_CNES(
       year_start = year_start,
       month_start = month_start,
       year_end = year_end,
@@ -47,22 +48,14 @@ equipamentos <-
     )
 
     #Renomeando o nome da coluna
-    names(data_cnes)[4] = 'Tipo_Equipamento'
-    names(data_cnes)[5] = 'Cod_Equipamento'
-    data_cnes = data_cnes %>%
-      dplyr::mutate(QT_N_USO = QT_EXIST - QT_USO)
+    names(data_cnes)[4] <- 'Tipo_Equipamento'
+    names(data_cnes)[5] <- 'Cod_Equipamento'
 
-    data_cnes = data_cnes %>% dplyr::select(
-      "ANO_CMPT",
-      "MES_CMPT",
-      "CNES",
-      "Cod_Equipamento",
-      "QT_EXIST",
-      "QT_USO",
-      "Tipo_Equipamento"
-    )
+    #Cria a coluna da quantidade de equipamentos em nao uso
+    data_cnes <- data_cnes %>% dplyr::mutate(QT_N_USO = QT_EXIST - QT_USO)
 
-    data_cnes = data_cnes %>%
+    #Recodifica os valores da variavel, atribuindo os respectivos rotulos descritivos
+    data_cnes <- data_cnes %>%
       dplyr::mutate(
         Tipo_Equipamento = dplyr::case_match(
           Tipo_Equipamento,
@@ -79,7 +72,7 @@ equipamentos <-
         )
       ) %>% dplyr::relocate(Tipo_Equipamento, .before = 4)
 
-    data_cnes = data_cnes %>%
+    data_cnes <- data_cnes %>%
       dplyr::mutate(
         Cod_Equipamento = dplyr::case_match(
           Cod_Equipamento,
@@ -186,4 +179,4 @@ equipamentos <-
       )
 
     return(data_cnes)
-  }
+}
