@@ -4,7 +4,7 @@
 #' @description Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e do CNES-LT passados como parametro.
 #'
 #' @param data_SIH DataFrame. Objeto retornado pela funcao get_data()
-#' @param data_CNES DataFrame. Objeto retornado pela funcao create_data_raw_cnes()
+#' @param data_CNES DataFrame. Objeto retornado pela funcao get_data_CNES(type_data = "LT",...)
 #'
 #' @return Um DataFrame com os indicadores
 #'
@@ -13,7 +13,7 @@
 #' \dontrun{
 #'   dados = indicadores(
 #'     data_SIH = data_SIH,
-#'     data_cnes = data_CNES
+#'     data_CNES = data_CNES
 #'   )
 #' }
 #'

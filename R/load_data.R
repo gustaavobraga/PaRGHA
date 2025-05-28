@@ -49,7 +49,7 @@ load_data <- function(information_system,
     dbc_dir_path = fs::path(save_path, "file_DBC", information_system)
     dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-    files_chunks = chunk(dbf_files)
+    files_chunks = chunk_fast(dbf_files)
 
     # Função para processar cada chunk
     processa_chunk = function(chunk, n) {
