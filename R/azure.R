@@ -1,29 +1,30 @@
 
-#' Obtem ...
+#' Escreve em um Banco de Dados Remoto
 #'
-#' @description ...
+#' @description Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerador_denominador)
 #'
+#' @param user String. Nome do usuario que tem acesso ao banco
+#' @param password String. Senha do usuario para acessa o banco
+#' @param tabela String. Nome da tabela do banco (leitos, habilitacao, equipamento
+#' s,numerador_denominador).
 #' @param data DataFrame. Dados que serao inseridos na tabela.
-#' @param tabela String. Nome da tabela do banco (leitos, habilitacao, equipamentos,numerador_denominador).
-#'
-#' @return ...
 #'
 #'
 #' @examples
 #' \dontrun{
-#'   azure()
+#'   azure("gustavo","12345","leitos",data)
 #' }
 #'
 #' @export
-azure <- function(data, tabela) {
+azure <- function(user,password,tabela,data) {
 
   con = DBI::dbConnect(
     RPostgres::Postgres(),
     dbname = "postgres",
     host = "teste-tcc.postgres.database.azure.com",
     port = 5432,
-    user = "gustavo",
-    password = "",
+    user = user,
+    password = password,
     sslmode = "require"
   )
 
@@ -113,7 +114,7 @@ azure <- function(data, tabela) {
 #
 #   #DBI::dbExistsTable(con, "equipamentos")
 #
-#   DBI::dbGetQuery(con, "SELECT * FROM numerador_denominador LIMIT 10")
+#   DBI::dbGetQuery(con, "SELECT * FROM leitos LIMIT 10")
 #
 #   #Dimensao da tabela
 #   DBI::dbGetQuery(con, "SELECT COUNT(*) FROM habilitacao")

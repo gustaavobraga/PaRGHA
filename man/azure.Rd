@@ -2,24 +2,26 @@
 % Please edit documentation in R/azure.R
 \name{azure}
 \alias{azure}
-\title{Obtem ...}
+\title{Escreve em um Banco de Dados Remoto}
 \usage{
-azure(data, tabela)
+azure(user, password, tabela, data)
 }
 \arguments{
-\item{data}{DataFrame. Dados que serao inseridos na tabela.}
+\item{user}{String. Nome do usuario que tem acesso ao banco}
 
-\item{tabela}{String. Nome da tabela do banco (leitos, habilitacao, equipamentos,numerador_denominador).}
-}
-\value{
-...
+\item{password}{String. Senha do usuario para acessa o banco}
+
+\item{tabela}{String. Nome da tabela do banco (leitos, habilitacao, equipamento
+s,numerador_denominador).}
+
+\item{data}{DataFrame. Dados que serao inseridos na tabela.}
 }
 \description{
-...
+Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerador_denominador)
 }
 \examples{
 \dontrun{
-  azure()
+  azure("gustavo","12345","leitos",data)
 }
 
 }
