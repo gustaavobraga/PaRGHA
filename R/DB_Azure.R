@@ -12,11 +12,11 @@
 #'
 #' @examples
 #' \dontrun{
-#'   azure("gustavo","12345","leitos",data)
+#'   DB_Azure("gustavo","12345","leitos",data)
 #' }
 #'
 #' @export
-azure <- function(user,password,tabela,data) {
+DB_Azure <- function(user,password,tabela,data) {
 
   con = DBI::dbConnect(
     RPostgres::Postgres(),
