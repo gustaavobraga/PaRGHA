@@ -39,10 +39,10 @@ auto_TCC = function(
 
   tempo_inicio <- system.time({
     #>Leitos -------------------
-    leitos = TCC::leitos(year_start, month_start, year_end, month_end)
+    leitos = leitos(year_start, month_start, year_end, month_end)
 
     #Armazena os dados no banco de dados
-    TCC::DB_Azure(user, password, "leitos", leitos)
+    DB_Azure(user, password, "leitos", leitos)
 
     #Apaga a pasta temporaria com os dados dos leitos
     unlink(fs::path(tempdir(), "CNES", "LT"),
@@ -51,10 +51,10 @@ auto_TCC = function(
     gc()
 
     #>Habilitacoes -------------------
-    habilitacoes = TCC::habilitacoes(year_start, month_start, year_end, month_end)
+    habilitacoes = habilitacoes(year_start, month_start, year_end, month_end)
 
     #Armazena os dados no banco de dados
-    TCC::DB_Azure(user, password, "habilitacao", habilitacoes)
+    DB_Azure(user, password, "habilitacao", habilitacoes)
 
     #Apaga a pasta temporaria com os dados das habilitacoes
     unlink(fs::path(tempdir(), "CNES", "HB"),
@@ -63,10 +63,10 @@ auto_TCC = function(
     gc()
 
     #>Equipamentos -------------------
-    equipamentos = TCC::equipamentos(year_start, month_start, year_end, month_end)
+    equipamentos = equipamentos(year_start, month_start, year_end, month_end)
 
     #Armazena os dados no banco de dados
-    TCC::DB_Azure(user, password, "equipamentos", equipamentos)
+    DB_Azure(user, password, "equipamentos", equipamentos)
 
     #Apaga a pasta temporaria com os dados dos equipamentos
     unlink(fs::path(tempdir(), "CNES", "EQ"),
@@ -76,7 +76,7 @@ auto_TCC = function(
 
     #>Numerador Denominador -------------------
     data_SIH =
-      TCC::get_data_SIH(year_start,month_start,year_end,month_end,save_path)
+      get_data_SIH(year_start,month_start,year_end,month_end,save_path)
 
     #Apaga a pasta temporaria com os dados do SIH
     unlink(fs::path(tempdir(), "file_DBC"),
@@ -87,14 +87,14 @@ auto_TCC = function(
       "RS","PA","GO","PR","PB","RN","CE","MT","MA",
       "SC","PI","AP","TO","ES","SP"
     )
-    data_CNES = TCC::get_data_CNES(
+    data_CNES = get_data_CNES(
       year_start,month_start,year_end,month_end,state_abbr,"LT",save_path)
 
     #Apaga a pasta temporaria com os dados do CNES
     unlink(fs::path(tempdir(), "CNES", "LT"),
            recursive = TRUE)
 
-    indicadores = TCC::indicadores(data_SIH = data_SIH,
+    indicadores = indicadores(data_SIH = data_SIH,
                                    data_CNES = data_CNES)
 
     indicadores = dplyr::ungroup(indicadores)
@@ -112,7 +112,7 @@ auto_TCC = function(
     )
 
     #Armazena os dados no banco de dados
-    TCC::DB_Azure(user, password, "numerador_denominador", num_den)
+    DB_Azure(user, password, "numerador_denominador", num_den)
 
     rm(data_CNES, data_SIH, indicadores, num_den, state_abbr)
     gc()

@@ -7,6 +7,7 @@
 #' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.
 #' @param year_end numeric. Ano final para o download dos dados, no formato yyyy.
 #' @param month_end numeric. Mês final para o download dos dados, no formato mm.
+#' @param labels Logical. O padrao é TRUE. Cria colunas com os rotulos das variaveis categoricas.
 #'
 #' @return Um DataFrame com os dados das leitos
 #'
@@ -16,7 +17,8 @@
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
-#'     month_end = 2
+#'     month_end = 2,
+#'     labels = TRUE
 #'  )
 #' }
 #'
@@ -25,7 +27,8 @@ leitos <-
   function(year_start,
            month_start,
            year_end,
-           month_end) {
+           month_end,
+           labels = TRUE) {
   `%>%` <- dplyr::`%>%`
 
   estados <- c(
@@ -47,19 +50,10 @@ leitos <-
   #Junta com a tabela principal e remove colunas desnecessárias
   data_cnes <- data_cnes %>% dplyr::filter(TP_LEITO!="7")
 
-  #Recodifica os valores da variavel, atribuindo os respectivos rotulos descritivos
-  data_cnes <- data_cnes %>%
-    dplyr::mutate(
-      TP_LEITO = dplyr::case_match(
-        TP_LEITO,
-        "1" ~ "Cir\u00fargico",
-        "2" ~ "Cl\u00ednico",
-        "3" ~ "Complementar",
-        "4" ~ "Obst\u00e9trico",
-        "5" ~ "Pedi\u00e1trico",
-        "6" ~ "Outras Especialidades",
-        .default = TP_LEITO
-      )
-    )
+  #ADD colunas com os rotulos das variaveis categoricas.
+  if(labels){
+    data_cnes <- labels(data_cnes,'leitos')
+    data_cnes <- labels(data_cnes,'cneS ')
+  }
   return(data_cnes)
 }

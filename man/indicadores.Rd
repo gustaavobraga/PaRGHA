@@ -4,12 +4,14 @@
 \alias{indicadores}
 \title{Cria os indicadores dos estabelecimentos da EBSERH}
 \usage{
-indicadores(data_SIH, data_CNES)
+indicadores(data_SIH, data_CNES, labels_CNES = TRUE)
 }
 \arguments{
 \item{data_SIH}{DataFrame. Objeto retornado pela funcao get_data()}
 
 \item{data_CNES}{DataFrame. Objeto retornado pela funcao get_data_CNES(type_data = "LT",...)}
+
+\item{labels_CNES}{Logical. O padrao é TRUE. Criar uma coluna com o nome dos estabelecimentos de saude.}
 }
 \value{
 Um DataFrame com os indicadores
@@ -21,7 +23,8 @@ Cria os indicadores dos estabelecimentos da EBSERH com base nos dados do SIH e d
 \dontrun{
   dados = indicadores(
     data_SIH = data_SIH,
-    data_CNES = data_CNES
+    data_CNES = data_CNES,
+    labels_CNES = TRUE
   )
 }
 

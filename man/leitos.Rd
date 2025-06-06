@@ -4,7 +4,7 @@
 \alias{leitos}
 \title{Cria a base de dados dos leitos}
 \usage{
-leitos(year_start, month_start, year_end, month_end)
+leitos(year_start, month_start, year_end, month_end, labels = TRUE)
 }
 \arguments{
 \item{year_start}{numeric. Ano inicial para o download dos dados, no formato yyyy.}
@@ -14,6 +14,8 @@ leitos(year_start, month_start, year_end, month_end)
 \item{year_end}{numeric. Ano final para o download dos dados, no formato yyyy.}
 
 \item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
+
+\item{labels}{Logical. O padrao é TRUE. Cria colunas com os rotulos das variaveis categoricas.}
 }
 \value{
 Um DataFrame com os dados das leitos
@@ -27,7 +29,8 @@ Cria a base de dados dos leitos dos estabelecimentos EBSERH
     year_start = 2024,
     month_start = 1,
     year_end = 2024,
-    month_end = 2
+    month_end = 2,
+    labels = TRUE
  )
 }
 

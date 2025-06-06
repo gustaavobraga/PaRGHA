@@ -7,6 +7,7 @@
 #' @param month_start numeric. Mês inicial para o download dos dados, no formato mm.
 #' @param year_end numeric. Ano final para o download dos dados, no formato yyyy.
 #' @param month_end numeric. Mês final para o download dos dados, no formato mm.
+#' @param labels Logical. O padrao é TRUE. Cria colunas com os rotulos das variaveis categoricas.
 #'
 #' @return Um DataFrame com os dados das habilitacoes
 #'
@@ -16,7 +17,8 @@
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
-#'     month_end = 1
+#'     month_end = 1,
+#'     labels = TRUE
 #'  )
 #' }
 #'
@@ -25,7 +27,8 @@ habilitacoes <-
   function(year_start,
            month_start,
            year_end,
-           month_end) {
+           month_end,
+           labels = TRUE) {
     `%>%` <- dplyr::`%>%`
 
     estados <- c(
@@ -45,7 +48,13 @@ habilitacoes <-
     )
 
     #Renomeando o nome da coluna
-    names(data_cnes)[3] <- "Cod_Habilitacao"
+    names(data_cnes)[4] <- "Cod_Habilitacao"
+
+    #ADD colunas com os rotulos das variaveis categoricas.
+    if(labels){
+      data_cnes <- labels(data_cnes,'habilitacao')
+      data_cnes <- labels(data_cnes,'cnes')
+    }
 
     return(data_cnes)
 }

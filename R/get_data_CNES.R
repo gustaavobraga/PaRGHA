@@ -157,8 +157,8 @@ get_data_CNES <-
         raw_CNES <- switch(
           type_data,
           "LT" = raw_CNES %>% dplyr::select(
-            "CODUFMUN","CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"),
-          "HB" = raw_CNES %>% dplyr::select("SGRUPHAB", "CNES", "COMPETEN"),
+            "CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"),
+          "HB" = raw_CNES %>% dplyr::select("CNES","SGRUPHAB", "COMPETEN"),
           "EQ" = raw_CNES %>% dplyr::select(
             "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"),
         )
