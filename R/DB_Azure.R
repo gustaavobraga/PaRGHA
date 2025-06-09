@@ -3,26 +3,43 @@
 #'
 #' @description Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerador_denominador)
 #'
+#' @param db_name String. Nome do banco de dados.
+#' @param host String. Host.
+#' @param port String. Porta de conexão.
 #' @param user String. Nome do usuario que tem acesso ao banco
 #' @param password String. Senha do usuario para acessa o banco
 #' @param tabela String. Nome da tabela do banco (leitos, habilitacao, equipamento
 #' s,numerador_denominador).
 #' @param data DataFrame. Dados que serao inseridos na tabela.
 #'
-#'
 #' @examples
 #' \dontrun{
-#'   DB_Azure("gustavo","12345","leitos",data)
+#'   DB_Azure(
+#'     db_name = "postgres",
+#'     host = "teste-tcc.postgres.database.azure.com",
+#'     port = "5432",
+#'     user = "gustavo",
+#'     password = "-",
+#'     tabela = "leitos",
+#'     data = data
+#'   )
 #' }
 #'
 #' @export
-DB_Azure <- function(user,password,tabela,data) {
+DB_Azure <- function(db_name,
+                     host,
+                     port,
+                     user,
+                     password,
+                     tabela,
+                     data)
+{
 
-  con = DBI::dbConnect(
+  con <- DBI::dbConnect(
     RPostgres::Postgres(),
-    dbname = "postgres",
-    host = "teste-tcc.postgres.database.azure.com",
-    port = 5432,
+    dbname = db_name,
+    host = host,
+    port = port,
     user = user,
     password = password,
     sslmode = "require"
@@ -31,7 +48,11 @@ DB_Azure <- function(user,password,tabela,data) {
   #Coloca o nome das colunas em minusculo
   names(data) <- tolower(names(data))
 
-  if (tabela %in% c("leitos", "habilitacao", "equipamentos", "numerador_denominador")) {
+  if (tabela %in% c("leitos",
+                    "habilitacao",
+                    "equipamentos",
+                    "numerador_denominador"
+  )) {
     #Insercao de novos registros na tabela especificada
     DBI::dbWriteTable(
       con,
@@ -50,16 +71,15 @@ DB_Azure <- function(user,password,tabela,data) {
 #
 #   #Create table leitos
 #   DBI::dbExecute(
-#     con,
-#     "CREATE TABLE leitos (
-#       ano_cmpt   TEXT,
-#       mes_cmpt   TEXT,
-#       codufmun   TEXT,
-#       cnes       TEXT,
-#       tp_leito   TEXT,
-#       codleito   TEXT,
-#       qt_exist   INTEGER
-#     );"
+#    con,
+#    "CREATE TABLE leitos (
+#      ano_cmpt   TEXT,
+#      mes_cmpt   TEXT,
+#      cnes       TEXT,
+#      tp_leito   TEXT,
+#      codleito   TEXT,
+#      qt_exist   INTEGER
+#    );"
 #   )
 #   #Create table habilitacao
 #   DBI::dbExecute(
@@ -92,7 +112,6 @@ DB_Azure <- function(user,password,tabela,data) {
 #     ano_cmpt                           TEXT,
 #     mes_cmpt                           TEXT,
 #     cnes                               TEXT,
-#     name_cnes                          TEXT,
 #     num_dias_perman_hosp               INTEGER,
 #     num_motivos_saida_hosp             INTEGER,
 #     num_dias_perman_clinica            INTEGER,
@@ -110,7 +129,7 @@ DB_Azure <- function(user,password,tabela,data) {
 # ")
 #
 #   #Remove a tabela
-#   #DBI::dbExecute(con, "DROP TABLE data_sih;")
+#   #DBI::dbExecute(con, "DROP TABLE numerador_denominador;")
 #
 #   #DBI::dbExistsTable(con, "equipamentos")
 #

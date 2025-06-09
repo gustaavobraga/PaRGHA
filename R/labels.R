@@ -1,7 +1,7 @@
 
 #' Adiciona rotulos descritivos a partir de colunas de codigos
 #'
-#' @description Cria uma coluna de rotulos associada a colunas de codigos
+#' @description Cria colunas de rotulos associada a colunas de codigos.
 #'
 #' @param data DataFrame.
 #' @param type_data String. O tipo da base de dados do CNES que sera baixado. Valores aceitos ("cnes", "leitos", "equipamentos", "habilitacao").

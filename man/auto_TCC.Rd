@@ -5,6 +5,9 @@
 \title{Cria tabelas e salva no banco de dados}
 \usage{
 auto_TCC(
+  db_name,
+  host,
+  port,
   user,
   password,
   year_start,
@@ -15,6 +18,12 @@ auto_TCC(
 )
 }
 \arguments{
+\item{db_name}{String. Nome do banco de dados.}
+
+\item{host}{String. Host.}
+
+\item{port}{String. Porta de conexão.}
+
 \item{user}{String. Nome do usuario que tem acesso ao banco}
 
 \item{password}{String. Senha do usuario para acessa o banco}
@@ -38,6 +47,9 @@ Cria as tabelas de Leitos, Habilitacoes, Equipamentos e do Numerador/Denominador
 \examples{
 \dontrun{
   auto_TCC(
+    db_name = "postgres",
+    host = "teste-tcc.postgres.database.azure.com",
+    port = "5432",
     user = "gustavo",
     password = "-",
     year_start = 2021,

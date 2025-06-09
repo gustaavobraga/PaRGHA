@@ -15,7 +15,7 @@ labels(data, type_data)
 O DataFrame recebido e as novas colunas.
 }
 \description{
-Cria uma coluna de rotulos associada a colunas de codigos
+Cria colunas de rotulos associada a colunas de codigos.
 }
 \examples{
 \dontrun{

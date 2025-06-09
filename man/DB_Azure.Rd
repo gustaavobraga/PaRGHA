@@ -4,9 +4,15 @@
 \alias{DB_Azure}
 \title{Escreve em um Banco de Dados Remoto}
 \usage{
-DB_Azure(user, password, tabela, data)
+DB_Azure(db_name, host, port, user, password, tabela, data)
 }
 \arguments{
+\item{db_name}{String. Nome do banco de dados.}
+
+\item{host}{String. Host.}
+
+\item{port}{String. Porta de conexão.}
+
 \item{user}{String. Nome do usuario que tem acesso ao banco}
 
 \item{password}{String. Senha do usuario para acessa o banco}
@@ -21,7 +27,15 @@ Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerad
 }
 \examples{
 \dontrun{
-  DB_Azure("gustavo","12345","leitos",data)
+  DB_Azure(
+    db_name = "postgres",
+    host = "teste-tcc.postgres.database.azure.com",
+    port = "5432",
+    user = "gustavo",
+    password = "-",
+    tabela = "leitos",
+    data = data
+  )
 }
 
 }

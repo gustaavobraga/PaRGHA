@@ -3,6 +3,9 @@
 #'
 #' @description Cria as tabelas de Leitos, Habilitacoes, Equipamentos e do Numerador/Denominador dos indicadores, e salva cada tabela no banco de dados remoto
 #'
+#' @param db_name String. Nome do banco de dados.
+#' @param host String. Host.
+#' @param port String. Porta de conexão.
 #' @param user String. Nome do usuario que tem acesso ao banco
 #' @param password String. Senha do usuario para acessa o banco
 #' @param year_start numeric. Ano inicial para o download dos dados, no formato yyyy.
@@ -16,6 +19,9 @@
 #' @examples
 #' \dontrun{
 #'   auto_TCC(
+#'     db_name = "postgres",
+#'     host = "teste-tcc.postgres.database.azure.com",
+#'     port = "5432",
 #'     user = "gustavo",
 #'     password = "-",
 #'     year_start = 2021,
@@ -27,6 +33,9 @@
 #'
 #' @export
 auto_TCC = function(
+    db_name,
+    host,
+    port,
     user,
     password,
     year_start,
@@ -39,10 +48,11 @@ auto_TCC = function(
 
   tempo_inicio <- system.time({
     #>Leitos -------------------
-    leitos = leitos(year_start, month_start, year_end, month_end)
+    cat("Leito:\n")
+    leitos = leitos(year_start, month_start, year_end, month_end,FALSE)
 
     #Armazena os dados no banco de dados
-    DB_Azure(user, password, "leitos", leitos)
+    DB_Azure(db_name, host, port, user, password, "leitos", leitos)
 
     #Apaga a pasta temporaria com os dados dos leitos
     unlink(fs::path(tempdir(), "CNES", "LT"),
@@ -51,10 +61,11 @@ auto_TCC = function(
     gc()
 
     #>Habilitacoes -------------------
-    habilitacoes = habilitacoes(year_start, month_start, year_end, month_end)
+    cat("\nHabilitacao:\n")
+    habilitacoes = habilitacoes(year_start, month_start, year_end, month_end,FALSE)
 
     #Armazena os dados no banco de dados
-    DB_Azure(user, password, "habilitacao", habilitacoes)
+    DB_Azure(db_name, host, port, user, password, "habilitacao", habilitacoes)
 
     #Apaga a pasta temporaria com os dados das habilitacoes
     unlink(fs::path(tempdir(), "CNES", "HB"),
@@ -63,10 +74,11 @@ auto_TCC = function(
     gc()
 
     #>Equipamentos -------------------
-    equipamentos = equipamentos(year_start, month_start, year_end, month_end)
+    cat("\nEquipamentos:\n")
+    equipamentos = equipamentos(year_start, month_start, year_end, month_end,FALSE)
 
     #Armazena os dados no banco de dados
-    DB_Azure(user, password, "equipamentos", equipamentos)
+    DB_Azure(db_name, host, port, user, password, "equipamentos", equipamentos)
 
     #Apaga a pasta temporaria com os dados dos equipamentos
     unlink(fs::path(tempdir(), "CNES", "EQ"),
@@ -75,8 +87,13 @@ auto_TCC = function(
     gc()
 
     #>Numerador Denominador -------------------
-    data_SIH =
-      get_data_SIH(year_start,month_start,year_end,month_end,save_path)
+    #Obtem os dados do SIH
+    cat("\nNumerador Denominador:\n")
+    data_SIH = get_data_SIH(year_start = year_start,
+                            month_start = month_start,
+                            year_end = year_end,
+                            month_end = month_end,
+                            save_path = save_path)
 
     #Apaga a pasta temporaria com os dados do SIH
     unlink(fs::path(tempdir(), "file_DBC"),
@@ -87,18 +104,28 @@ auto_TCC = function(
       "RS","PA","GO","PR","PB","RN","CE","MT","MA",
       "SC","PI","AP","TO","ES","SP"
     )
-    data_CNES = get_data_CNES(
-      year_start,month_start,year_end,month_end,state_abbr,"LT",save_path)
+    #Obtem os dados do CNES
+    data_CNES = get_data_CNES(year_start = year_start,
+                              month_start = month_start,
+                              year_end = year_end,
+                              month_end = month_end,
+                              state_abbr = state_abbr,
+                              type_data = "LT",
+                              save_path = save_path)
 
     #Apaga a pasta temporaria com os dados do CNES
     unlink(fs::path(tempdir(), "CNES", "LT"),
            recursive = TRUE)
 
+    #Cria um DF com as colunas dos numeradores,
+    #denominadores e dos indicadores
     indicadores = indicadores(data_SIH = data_SIH,
-                                   data_CNES = data_CNES)
+                              data_CNES = data_CNES,
+                              labels_CNES = FALSE)
 
     indicadores = dplyr::ungroup(indicadores)
-    #Numerador e denominador
+
+    #Remove as colunas que sao indicadores
     num_den = indicadores %>% dplyr::select(
       -c(
         "i_taxa_de_cesarea",
@@ -112,7 +139,7 @@ auto_TCC = function(
     )
 
     #Armazena os dados no banco de dados
-    DB_Azure(user, password, "numerador_denominador", num_den)
+    DB_Azure(db_name, host, port, user, password, "numerador_denominador", num_den)
 
     rm(data_CNES, data_SIH, indicadores, num_den, state_abbr)
     gc()
