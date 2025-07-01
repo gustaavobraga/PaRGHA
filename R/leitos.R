@@ -48,12 +48,31 @@ leitos <-
   )
 
   #Junta com a tabela principal e remove colunas desnecessárias
-  data_cnes <- data_cnes %>% dplyr::filter(TP_LEITO!="7")
+  #data_cnes <- data_cnes %>% dplyr::filter(TP_LEITO!="7")
 
   #ADD colunas com os rotulos das variaveis categoricas.
   if(labels){
     data_cnes <- labels(data_cnes,'leitos')
     data_cnes <- labels(data_cnes,'cneS ')
   }
+
+  #Cria a coluna qt_exist_uti
+  leitos_uti <- c(51,52,61,62,63,74,75,76,77,78,79,80,81,82,83,85,86)
+  data_cnes <- data_cnes %>%
+    dplyr::mutate(
+      QT_EXIST_UTI = dplyr::if_else(
+        cod_especialidade_leito %in% leitos_uti, QT_EXIST, 0
+      )
+    )
+
+  #Converte as colunas para inteiro
+  data_cnes <- data_cnes %>%
+    dplyr::mutate(
+      dplyr::across(
+        c(cod_tipo_leito, cod_especialidade_leito, QT_EXIST_UTI),
+        as.integer
+      )
+    )
+
   return(data_cnes)
 }

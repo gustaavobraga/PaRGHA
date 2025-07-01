@@ -1,5 +1,5 @@
 
-#' Leitura e filtragem dos dados DBC
+#' Lê e filtra os microdados DBC baixados
 #'
 #' @description Le arquivos DBC baixados pela função download_data, suportando um unico tipo de sistema por execucao: 'SIH-RD', 'SIH-RJ' ou 'SIH-SP'. Filtra os registros para incluir apenas estabelecimentos da EBSERH e seleciona as colunas relevantes.
 #'
@@ -10,10 +10,9 @@
 #'
 #' @examples
 #' \dontrun{
-#'   load_data(
-#'     information_system = "SIH-RD",
-#'     save_path = tempdir()
-#'  )
+#'     data_sp = load_data(
+#'       information_system = "SIH-SP",
+#'       save_path = tempdir())
 #' }
 #'
 #' @export
@@ -39,41 +38,59 @@ load_data <- function(information_system,
     `SIH-RJ` = c("N_AIH","ANO_CMPT","MES_CMPT","PROC_REA",
                  "CNES","COBRANCA","DIAS_PERM","ESPEC",
                  "MARCA_UTI","UTI_MES_TO"),
-    `SIH-SP` = c("SP_AA","SP_MM","SP_CNES","SP_NAIH","SP_PROCREA",
-                 "SP_ATOPROF","SP_VALATO","SP_COMPLEX","SP_FINANC",
-                 "SP_PF_CBO","IN_TP_VAL","SP_QT_PROC")
+    `SIH-SP` = c("SP_NAIH","SP_ATOPROF","SP_QT_PROC")
   )
 
   tempo_inicio <- system.time({
-    # Lista os nomes dos arquivos DBC que estao no diretorio save_path
-    dbc_dir_path = fs::path(save_path, "file_DBC", information_system)
-    dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-    files_chunks = chunk_fast(dbf_files)
+    #Lista os nomes dos arquivos DBC que estao no diretorio save_path
+    dbc_dir_path <- fs::path(save_path, "file_DBC", information_system)
+    dbf_files <- fs::dir_ls(dbc_dir_path, glob = "*.dbc")
+
+    #Divide os microdados em chunk/pedacos, otimizando a leitura
+    files_chunks <- chunk_fast(dbf_files)
 
     # Função para processar cada chunk
-    processa_chunk = function(chunk, n) {
-      # Ler os arquivos do chunk
-      raw_SIH = purrr::map_dfr(chunk,
+    processa_chunk <- function(chunk, n) {
+
+      #Ler os arquivos do chunk
+      raw_SIH <- purrr::map_dfr(chunk,
                                read.dbc::read.dbc,
                                as.is = TRUE, .id = "file_id")
 
-      # Filtragem por estabelecimentos EBSERH
+      # Filtra os estabelecimentos EBSERH
       if(information_system=="SIH-SP"){
-        raw_SIH = dplyr::filter(raw_SIH, SP_CNES %in% CNES_EBSERH)
+        raw_SIH <- dplyr::filter(raw_SIH, SP_CNES %in% CNES_EBSERH)
       } else {
-        raw_SIH = dplyr::filter(raw_SIH, CNES %in% CNES_EBSERH)
+        raw_SIH <- dplyr::filter(raw_SIH, CNES %in% CNES_EBSERH)
       }
 
-      # Seleção de colunas
-      colunas = colunas_selecionadas[[information_system]]
+      #Seleção de colunas
+      colunas <- colunas_selecionadas[[information_system]]
       if (!is.null(colunas)) {
-        raw_SIH = dplyr::select(raw_SIH, dplyr::all_of(colunas))
+        raw_SIH <- dplyr::select(raw_SIH, dplyr::all_of(colunas))
       }
 
-      # Caminho para salvar o chunk processado
-      output_path = fs::path(dbc_dir_path, sprintf("output_%s_chunk_%d.rds", information_system, n))
+      #Converte as colunas para inteiro
+      if (information_system != "SIH-SP") {
+        #Exceto as colunas:
+        colunas_a_preservar <- c("N_AIH", "PROC_REA", "CNES")
+
+        raw_SIH <- raw_SIH %>%
+          dplyr::mutate(dplyr::across(
+            .cols = setdiff(names(.), colunas_a_preservar),
+            .fns = ~ as.integer(.)
+          ))
+      }
+
+      #Path para salvar o chunk processado
+      output_path <- fs::path(
+        dbc_dir_path,
+        sprintf("output_%s_chunk_%d.rds", information_system, n))
+
+      #Salva como RDS o resultado do chunk
       saveRDS(raw_SIH, file = output_path)
+
       rm(raw_SIH)
       gc()
     }
@@ -82,9 +99,15 @@ load_data <- function(information_system,
     purrr::walk2(files_chunks, seq_along(files_chunks), processa_chunk)
 
     # União dos arquivos .rds gerados
-    outputSIH = fs::dir_ls(dbc_dir_path, glob = "*.rds") %>%
+    outputSIH <-
+      fs::dir_ls(dbc_dir_path, glob = "*.rds") %>%
       purrr::map_dfr(readRDS)
   })
-  cat("Tempo para ler os dados",information_system,":",round(tempo_inicio[3]/60,4), "minutos\n")
+
+  cat("Tempo para ler os dados",
+      information_system,":",
+      round(tempo_inicio[3]/60,4),
+      "minutos\n")
+
   return(outputSIH)
 }

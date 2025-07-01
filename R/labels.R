@@ -15,6 +15,7 @@
 #'
 #' @export
 labels = function(data, type_data){
+  `%>%` <- dplyr::`%>%`
 
   type_data = tolower(trimws(type_data))
 
@@ -22,7 +23,7 @@ labels = function(data, type_data){
     #ADD a coluna com o nome dos Hospitais
     data = data %>%
       dplyr::mutate(
-        Nome_CNES = dplyr::case_match(
+        nome_CNES = dplyr::case_match(
           CNES,
           "0" ~ NA,
           "0000396" ~ "HC da Univ. Federal de Pernambuco (HC-UFPE)",
@@ -70,54 +71,54 @@ labels = function(data, type_data){
           "6568343" ~ "Hospital Universit\u00e1rio de Lagarto (HUL-UFS)",
           .default = CNES
         )
-      ) %>% dplyr::relocate(Nome_CNES, .before = 4)
+      ) %>% dplyr::relocate(nome_CNES, .before = 4)
   }
   if (type_data == "leitos") {
     data = data %>%
       dplyr::mutate(
-        Nome_TP_LEITO = dplyr::case_match(
-          TP_LEITO,
+        nome_tipo_leito = dplyr::case_match(
+          cod_tipo_leito,
           "1" ~ "Cir\u00fargico",
           "2" ~ "Cl\u00ednico",
           "3" ~ "Complementar",
           "4" ~ "Obst\u00e9trico",
           "5" ~ "Pedi\u00e1trico",
           "6" ~ "Outras Especialidades",
-          .default = TP_LEITO
+          .default = cod_tipo_leito
         )
-      ) %>% dplyr::relocate(Nome_TP_LEITO, .before = 5)
+      ) %>% dplyr::relocate(nome_tipo_leito, .before = 5)
   }
   if (type_data == "equipamentos") {
     data <- data %>%
       dplyr::mutate(
-        Nome_Tipo_Equipamento = dplyr::case_match(
-          Tipo_Equipamento,
-          "1" ~ "Equipamentos De Diagnostico Por Imagem",
-          "2" ~ "Equipamentos De Infra-Estrutura",
-          "3" ~ "Equipamentos Por M\u00e9todos \u00d3pticos",
-          "4" ~ "Equipamentos Por M\u00e9todos Gr\u00e1ficos",
-          "5" ~ "Equipamentos Para Manuten\u00e7\u00e3o Da Vida",
-          "6" ~ "Outros Equipamentos",
-          "7" ~ "Equipamentos De Odontologia",
-          "8" ~ "Equipamentos De Audiologia",
-          "9" ~ "Equipamentos De Telessa\u00fade",
-          .default = Tipo_Equipamento
+        nome_tipo_equipamento = dplyr::case_match(
+          cod_tipo_equipamento,
+          "1" ~ "Eq. De Diagnostico Por Imagem",
+          "2" ~ "Eq. De Infra-Estrutura",
+          "3" ~ "Eq. Por M\u00e9todos \u00d3pticos",
+          "4" ~ "Eq. Por M\u00e9todos Gr\u00e1ficos",
+          "5" ~ "Eq. Para Manuten\u00e7\u00e3o Da Vida",
+          "6" ~ "Outros Eq.",
+          "7" ~ "Eq. De Odontologia",
+          "8" ~ "Eq. De Audiologia",
+          "9" ~ "Eq. De Telessa\u00fade",
+          .default = cod_tipo_equipamento
         )
-      ) %>% dplyr::relocate(Nome_Tipo_Equipamento, .before = 5)
+      ) %>% dplyr::relocate(nome_tipo_equipamento, .before = 5)
 
     data <- data %>%
       dplyr::mutate(
-        Nome_Equipamento = dplyr::case_match(
-          Cod_Equipamento,
-          "01" ~ "Gama C\u00e2mara",
-          "02" ~ "Mam\u00f3grafo com Comando Simples",
-          "03" ~ "Mam\u00f3grafo com Estereotaxia",
-          "04" ~ "Raio X At\u00e9 100 Ma",
-          "05" ~ "Raio X de 100 A 500 Ma",
-          "06" ~ "Raio X Mais de 500ma",
-          "07" ~ "Raio X Dent\u00e1rio",
-          "08" ~ "Raio X com Fluoroscopia",
-          "09" ~ "Raio X para Densitometria \u00d3ssea",
+        nome_equipamento = dplyr::case_match(
+          cod_equipamento,
+          "1" ~ "Gama C\u00e2mara",
+          "2" ~ "Mam\u00f3grafo com Comando Simples",
+          "3" ~ "Mam\u00f3grafo com Estereotaxia",
+          "4" ~ "Raio X At\u00e9 100 Ma",
+          "5" ~ "Raio X de 100 A 500 Ma",
+          "6" ~ "Raio X Mais de 500ma",
+          "7" ~ "Raio X Dent\u00e1rio",
+          "8" ~ "Raio X com Fluoroscopia",
+          "9" ~ "Raio X para Densitometria \u00d3ssea",
           "10" ~ "Raio X para Hemodin\u00e2mica",
           "11" ~ "Tom\u00f3grafo Computadorizado",
           "12" ~ "Resson\u00e2ncia Magn\u00e9tica",
@@ -207,74 +208,74 @@ labels = function(data, type_data){
           "96" ~ "Sistema Completo de Refor\u00e7o Visual (VRA)",
           "97" ~ "Ganho de Inser\u00e7\u00e3o",
           "98" ~ "Hi-Pro",
-          .default = Cod_Equipamento
+          .default = cod_equipamento
         )
-      ) %>% dplyr::relocate(Nome_Equipamento, .before = 7)
+      ) %>% dplyr::relocate(nome_equipamento, .before = 7)
   }
   if (type_data == "habilitacao") {
     data = data %>%
       dplyr::mutate(
-        Nome_Habilitacao = dplyr::case_match(
-          Cod_Habilitacao,
+        nome_habilitacao = dplyr::case_match(
+          cod_habilitacao,
           "0" ~ NA,
-          "0101" ~ "Centro ref aten\u00e7\u00e3o \u00e0 saude idoso",
-          "0201" ~ "Centro ref cirurgia bariatrica",
-          "0301" ~ "Centros/nucleos realiz implante coclear",
-          "0302" ~ "Diagn/trat/reabil auditiva media complexidade",
-          "0303" ~ "Diagn/trat/reabil auditiva alta complexidade",
-          "0401" ~ "Centro tratamento m\u00e1 forma\u00e7\u00e3o l\u00e1bio palatal",
-          "0402" ~ "Laborat\u00f3rio regional pr\u00f3tese dent\u00e1ria",
-          "0403" ~ "Centro especialidades odontol\u00f3gicas I",
-          "0404" ~ "Centro especialidades odontol\u00f3gicas II",
-          "0405" ~ "Centro especialidades odontol\u00f3gicas III",
-          "0501" ~ "Centro ref em oftalmologia n\u00edvel I",
-          "0502" ~ "Centro ref em oftalmologia n\u00edvel II",
-          "0601" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe I",
-          "0602" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe II",
-          "0603" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe III",
-          "0604" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe IV",
-          "0605" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe V",
-          "0606" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VI",
-          "0607" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VII",
-          "0608" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VIII",
-          "0609" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe IX",
-          "0610" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe X",
-          "0611" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XI",
-          "0612" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XII",
-          "0613" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XIII",
-          "0614" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XIV",
-          "0615" ~ "PNASS maior que 80%",
-          "0616" ~ "CAPS I",
-          "0617" ~ "CAPS II",
-          "0618" ~ "CAPS III",
-          "0619" ~ "CAPS \u00e1lcool e drogas",
-          "0620" ~ "CAPS infantil",
-          "0621" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas",
-          "0622" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe I",
-          "0623" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe II",
-          "0624" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe III",
-          "0625" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe IV",
-          "0626" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe V",
-          "0627" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VI",
-          "0628" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VII",
-          "0629" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VIII",
-          "0630" ~ "Psiquiatria III",
-          "0701" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual A",
-          "0702" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual B",
-          "0703" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual C",
-          "0704" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional A",
-          "0705" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional B",
-          "0706" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional C",
-          "0801" ~ "Unid assist alta complexidade cardiovascular",
-          "0802" ~ "Centro ref alta complexidade cardiovascular",
-          "0803" ~ "Cir cardiov, proc cardiolog intervencionista",
-          "0804" ~ "Cirurgia cardiovascular pedi\u00e1trica",
-          "0805" ~ "Cirurgia vascular",
-          "0806" ~ "Cirurgia vascular, proc endovasc extracard\u00edacos",
-          "0807" ~ "Lab eletrof, cir cardio, proc cardio interv",
-          "0808" ~ "Implante marcapasso definitivo",
-          "0809" ~ "Cirurgia card\u00edaca",
-          "0810" ~ "Lab.eletrofisiol/terapia intervencionista",
+          "101" ~ "Centro ref aten\u00e7\u00e3o \u00e0 saude idoso",
+          "201" ~ "Centro ref cirurgia bariatrica",
+          "301" ~ "Centros/nucleos realiz implante coclear",
+          "302" ~ "Diagn/trat/reabil auditiva media complexidade",
+          "303" ~ "Diagn/trat/reabil auditiva alta complexidade",
+          "401" ~ "Centro tratamento m\u00e1 forma\u00e7\u00e3o l\u00e1bio palatal",
+          "402" ~ "Laborat\u00f3rio regional pr\u00f3tese dent\u00e1ria",
+          "403" ~ "Centro especialidades odontol\u00f3gicas I",
+          "404" ~ "Centro especialidades odontol\u00f3gicas II",
+          "405" ~ "Centro especialidades odontol\u00f3gicas III",
+          "501" ~ "Centro ref em oftalmologia n\u00edvel I",
+          "502" ~ "Centro ref em oftalmologia n\u00edvel II",
+          "601" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe I",
+          "602" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe II",
+          "603" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe III",
+          "604" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe IV",
+          "605" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe V",
+          "606" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VI",
+          "607" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VII",
+          "608" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe VIII",
+          "609" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe IX",
+          "610" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe X",
+          "611" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XI",
+          "612" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XII",
+          "613" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XIII",
+          "614" ~ "Aten\u00e7\u00e3o \u00e0 sa\u00fade mental - classe XIV",
+          "615" ~ "PNASS maior que 80%",
+          "616" ~ "CAPS I",
+          "617" ~ "CAPS II",
+          "618" ~ "CAPS III",
+          "619" ~ "CAPS \u00e1lcool e drogas",
+          "620" ~ "CAPS infantil",
+          "621" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas",
+          "622" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe I",
+          "623" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe II",
+          "624" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe III",
+          "625" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe IV",
+          "626" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe V",
+          "627" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VI",
+          "628" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VII",
+          "629" ~ "Serv hosp ref usu\u00e1rios \u00e1lcool/drogas classe VIII",
+          "630" ~ "Psiquiatria III",
+          "701" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual A",
+          "702" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual B",
+          "703" ~ "Servi\u00e7o ref sa\u00fade trabalhador estadual C",
+          "704" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional A",
+          "705" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional B",
+          "706" ~ "Servi\u00e7o ref sa\u00fade trabalhador regional C",
+          "801" ~ "Unid assist alta complexidade cardiovascular",
+          "802" ~ "Centro ref alta complexidade cardiovascular",
+          "803" ~ "Cir cardiov, proc cardiolog intervencionista",
+          "804" ~ "Cirurgia cardiovascular pedi\u00e1trica",
+          "805" ~ "Cirurgia vascular",
+          "806" ~ "Cirurgia vascular, proc endovasc extracard\u00edacos",
+          "807" ~ "Lab eletrof, cir cardio, proc cardio interv",
+          "808" ~ "Implante marcapasso definitivo",
+          "809" ~ "Cirurgia card\u00edaca",
+          "810" ~ "Lab.eletrofisiol/terapia intervencionista",
           "1001" ~ "Centro refer\u00eancia tratamento dor cr\u00f4nica",
           "1101" ~ "Servi\u00e7o hospitalar para tratamento AIDS",
           "1102" ~ "Laboratorio para cd4/cd8, carga viral",
@@ -393,7 +394,7 @@ labels = function(data, type_data){
           "1902" ~ "Vasectomia",
           "2801" ~ "Cuidados intermedi\u00e1rios neonatal",
           "2901" ~ "Videocirurgias",
-          .default = Cod_Habilitacao
+          .default = cod_habilitacao
         )
       )
   }

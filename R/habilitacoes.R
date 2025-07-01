@@ -47,14 +47,16 @@ habilitacoes <-
       state_abbr = estados
     )
 
-    #Renomeando o nome da coluna
-    names(data_cnes)[4] <- "Cod_Habilitacao"
-
     #ADD colunas com os rotulos das variaveis categoricas.
     if(labels){
       data_cnes <- labels(data_cnes,'habilitacao')
       data_cnes <- labels(data_cnes,'cnes')
     }
+    #Converte a coluna para inteiro
+    data_cnes <- data_cnes %>%
+      dplyr::mutate(
+        dplyr::across(c(cod_habilitacao),as.integer)
+      )
 
     return(data_cnes)
 }

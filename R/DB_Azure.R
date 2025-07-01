@@ -48,6 +48,8 @@ DB_Azure <- function(db_name,
   #Coloca o nome das colunas em minusculo
   names(data) <- tolower(names(data))
 
+  data = data %>% dplyr::select(-c(ano,mes))
+
   if (tabela %in% c("leitos",
                     "habilitacao",
                     "equipamentos",
@@ -71,46 +73,52 @@ DB_Azure <- function(db_name,
 #
 #   #Create table leitos
 #   DBI::dbExecute(
-#    con,
-#    "CREATE TABLE leitos (
-#      ano_cmpt   TEXT,
-#      mes_cmpt   TEXT,
-#      cnes       TEXT,
-#      tp_leito   TEXT,
-#      codleito   TEXT,
-#      qt_exist   INTEGER
+#     con,
+#     "CREATE TABLE leitos (
+#       data                    INTEGER,
+#       ano                     INTEGER,
+#       mes                     INTEGER,
+#       CNES                    TEXT,
+#       cod_tipo_leito          INTEGER,
+#       cod_especialidade_leito INTEGER,
+#       qt_exist                INTEGER,
+#       qt_sus                  INTEGER,
+#       qt_exist_uti            INTEGER
 #    );"
 #   )
 #   #Create table habilitacao
 #   DBI::dbExecute(
 #     con,
 #     "CREATE TABLE habilitacao (
-#       ano_cmpt   TEXT,
-#       mes_cmpt   TEXT,
-#       cnes       TEXT,
-#       cod_habilitacao   TEXT
+#       data              INTEGER,
+#       ano               INTEGER,
+#       mes               INTEGER,
+#       cnes              TEXT,
+#       cod_habilitacao   INTEGER
 #     );"
 #   )
 #   #Create table equipamentos
 #   DBI::dbExecute(
 #     con,
 #     "CREATE TABLE equipamentos (
-#       ano_cmpt          TEXT,
-#       mes_cmpt          TEXT,
-#       cnes              TEXT,
-#       tipo_equipamento  TEXT,
-#       cod_equipamento   TEXT,
-#       qt_exist          INTEGER,
-#       qt_uso            INTEGER,
-#       qt_n_uso          INTEGER
+#       data                  INTEGER,
+#       ano                   INTEGER,
+#       mes                   INTEGER,
+#       cnes                  TEXT,
+#       cod_tipo_equipamento  INTEGER,
+#       cod_equipamento       INTEGER,
+#       qt_exist              INTEGER,
+#       qt_uso                INTEGER,
+#       qt_n_uso              INTEGER
 #     );"
 #   )
 #
 #   #Create table numerador_denominador
 #   DBI::dbExecute(con, "
 #   CREATE TABLE numerador_denominador (
-#     ano_cmpt                           TEXT,
-#     mes_cmpt                           TEXT,
+#     data                               INTEGER,
+#     ano                                INTEGER,
+#     mes                                INTEGER,
 #     cnes                               TEXT,
 #     num_dias_perman_hosp               INTEGER,
 #     num_motivos_saida_hosp             INTEGER,

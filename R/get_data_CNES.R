@@ -49,7 +49,23 @@ get_data_CNES <-
       "3285391","3432076","3654826","4014111","4044916",
       "5586348","6042414","6568343"
     )
+    publication_date_start <-
+      lubridate::ym(stringr::str_glue("{year_start}-{month_start}"))
+    publication_date_end <-
+      lubridate::ym(stringr::str_glue("{year_end}-{month_end}"))
 
+    nome_colunas <- c(
+      data = "COMPETEN",
+      ano = "ANO_CMPT",
+      mes = "MES_CMPT",
+      cod_tipo_leito = "TP_LEITO",
+      cod_especialidade_leito = "CODLEITO",
+      cod_habilitacao = "SGRUPHAB",
+      cod_tipo_equipamento = "TIPEQUIP",
+      cod_equipamento = "CODEQUIP"
+    )
+
+    #Download dos microdados ----------------------
     tempo_inicio_CNES <- system.time({
       type_data = toupper(trimws(type_data))
 
@@ -72,7 +88,6 @@ get_data_CNES <-
       if (!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-
       output_dir <- fs::path(output_dir, type_data)
       dir.create(output_dir)
 
@@ -106,11 +121,6 @@ get_data_CNES <-
       })
 
       #Filtra so os microdados que estao no intervalo desejado
-      publication_date_start <-
-        lubridate::ym(stringr::str_glue("{year_start}-{month_start}"))
-      publication_date_end <-
-        lubridate::ym(stringr::str_glue("{year_end}-{month_end}"))
-
       dir_files <- dir_files %>%
         dplyr::filter(
           publication_date >= publication_date_start &
@@ -129,61 +139,81 @@ get_data_CNES <-
       output_files_path <- fs::path(output_dir, files_name)
 
       #Download dos microdados
-      purrr::walk2(download_files_url, output_files_path, curl::curl_download)
+      purrr::walk2(download_files_url,
+                   output_files_path,
+                   curl::curl_download)
     })
-    cat("Tempo para baixar os dados do CNES:", round(tempo_inicio_CNES[3]/60,4), "minutos\n")
+    cat("Tempo para baixar os dados do CNES:",
+        round(tempo_inicio_CNES[3]/60,4), "minutos\n")
 
 
-    #Leitura dos microdados
-    #-----------------------------------------
+
+    #Leitura dos microdados -------------------------------
     tempo_inicio <- system.time({
-      dbc_dir_path = fs::path(save_path, "CNES", type_data)
-      dbf_files = fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-      files_chunks = chunk_fast(dbf_files)
-      length(files_chunks)
+      #Path dos microdados baixados
+      dbc_dir_path <- fs::path(save_path, "CNES", type_data)
+      dbf_files <- fs::dir_ls(dbc_dir_path, glob = "*.dbc")
 
-      # Função para processar cada chunk
-      processa_chunk = function(chunk, n) {
-        # Ler os arquivos do chunk
-        raw_CNES = purrr::map_dfr(chunk,
-                                  read.dbc::read.dbc,
-                                  as.is = TRUE,
-                                  .id = "file_id")
-        # Filtragem por estabelecimentos EBSERH
-        raw_CNES = dplyr::filter(raw_CNES, CNES %in% CNES_EBSERH)
+      #Divide os microdados em chunk/pedacos, otimizando a leitura
+      files_chunks <- chunk_fast(dbf_files)
 
-        #Selecionar as colunas com base no valor de type_datab
+      #Funcao para processar cada chunk
+      processa_chunk <- function(chunk, n) {
+
+        #Ler os arquivos do chunk
+        raw_CNES <- purrr::map_dfr(chunk,
+                                   read.dbc::read.dbc,
+                                   as.is = TRUE,
+                                   .id = "file_id")
+
+        #Filtra os estabelecimentos EBSERH
+        raw_CNES <- dplyr::filter(raw_CNES, CNES %in% CNES_EBSERH)
+
+        #Seleciona as colunas com base no valor de type_data
         raw_CNES <- switch(
           type_data,
           "LT" = raw_CNES %>% dplyr::select(
-            "CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST"),
+            "CNES","COMPETEN","TP_LEITO","CODLEITO","QT_EXIST","QT_SUS"),
           "HB" = raw_CNES %>% dplyr::select("CNES","SGRUPHAB", "COMPETEN"),
           "EQ" = raw_CNES %>% dplyr::select(
             "CNES","COMPETEN","TIPEQUIP","CODEQUIP","QT_EXIST","QT_USO"),
         )
 
-        output_path = fs::path(dbc_dir_path,
-                               sprintf("output_CNES-%s_chunk_%d.rds", type_data, n))
+        #O resultado é salvo em formato RDS para otimizar o uso de memória e evitar sobrecarga no ambiente do R.
+        output_path <-
+          fs::path(dbc_dir_path,
+                   sprintf("output_CNES-%s_chunk_%d.rds", type_data, n)
+                   )
         saveRDS(raw_CNES, file = output_path)
+
         rm(raw_CNES)
         gc()
       }
       # Processamento sequencial
       purrr::walk2(files_chunks, seq_along(files_chunks), processa_chunk)
 
-      # União dos arquivos .rds gerados
+      #União dos arquivos .rds gerados
       outputCNES = fs::dir_ls(dbc_dir_path, glob = "*.rds") %>%
         purrr::map_dfr(readRDS)
 
       #Formatando a coluna Data
       outputCNES = outputCNES %>%
         dplyr::mutate(
-          ANO_CMPT = stringr::str_sub(COMPETEN, 1, 4),
-          MES_CMPT = stringr::str_sub(COMPETEN, 5, 6)
+          COMPETEN = as.integer(COMPETEN),
+          ANO_CMPT = as.integer(stringr::str_sub(COMPETEN, 1, 4)),
+          MES_CMPT = as.integer(stringr::str_sub(COMPETEN, 5, 6))
         ) %>%
-        dplyr::select(ANO_CMPT, MES_CMPT, dplyr::everything(), -COMPETEN)
+        dplyr::select(COMPETEN, ANO_CMPT, MES_CMPT, dplyr::everything())
+
+      #Filtra o nome_colunas apenas os nomes que existem na outputCNES
+      nome_valido <- purrr::keep(nome_colunas, ~ .x %in% names(outputCNES))
+
+      #Renomear as colunas com base no nome_colunas
+      outputCNES = outputCNES %>%
+        dplyr::rename(!!!setNames(nome_valido,names(nome_valido)))
     })
-    cat("Tempo para ler os dados CNES: ",round(tempo_inicio[3]/60,4), "minutos\n")
+    cat("Tempo para ler os dados CNES: ",
+        round(tempo_inicio[3]/60,4), "minutos\n")
     return(outputCNES)
   }

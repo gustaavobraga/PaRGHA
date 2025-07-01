@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{Leitura e filtragem dos dados DBC}
+\title{Lê e filtra os microdados DBC baixados}
 \usage{
 load_data(information_system, save_path = tempdir())
 }
@@ -19,10 +19,9 @@ Le arquivos DBC baixados pela função download_data, suportando um unico tipo d
 }
 \examples{
 \dontrun{
-  load_data(
-    information_system = "SIH-RD",
-    save_path = tempdir()
- )
+    data_sp = load_data(
+      information_system = "SIH-SP",
+      save_path = tempdir())
 }
 
 }

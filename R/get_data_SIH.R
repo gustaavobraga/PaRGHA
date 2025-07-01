@@ -46,7 +46,7 @@ get_data_SIH <- function(
                 estados,
                 tempdir())
 
-  #Ler os arquivos DBC; Filtra os estabelecimentos da EBSERH e seleciona as colunas necessárias
+  # #Ler os arquivos DBC; Filtra os estabelecimentos da EBSERH e seleciona as colunas necessárias
   data_rd = load_data("SIH-RD")
   data_rj = load_data("SIH-RJ")
   data_sp = load_data("SIH-SP")
@@ -78,28 +78,34 @@ get_data_SIH <- function(
     dplyr::group_by(SP_NAIH) %>%
     dplyr::summarise(sum_SP_QT_PROC = sum(SP_QT_PROC))
 
-
   #consolidacao das informacoes-----
   data_rd$TIPO_AIH <- "Aprovada"
   data_rj$TIPO_AIH <- "Rejeitada"
-  base_combinada <- rbind(data_rd,data_rj)
+  dados <- rbind(data_rd,data_rj)
 
   #Cria a coluna TOTAL_CIRURGIAS_APRESENTADAS a partir da base data_cirurgias
-  base_combinada2 = base_combinada %>%
+  dados = dados %>%
     dplyr::left_join(data_cirurgias, by = c('N_AIH'="SP_NAIH")) %>%
     dplyr::mutate(TOTAL_CIRURGIAS_APRESENTADAS =
                     ifelse(is.na(sum_SP_QT_PROC), 1,
                            sum_SP_QT_PROC)) %>%
     dplyr::select(-sum_SP_QT_PROC)
 
-  #Cria a coluna CO_GRUPO_PROC, que contem o número do grupo
-  base_combinada2 = base_combinada2 %>%
+  #Cria a coluna CO_GRUPO_PROC, que contem o número do grupo do procedimento
+  dados = dados %>%
     dplyr::mutate(CO_GRUPO_PROC = substr(PROC_REA, 2, 2))
 
   #cria coluna SELECAO_MOTIVO_SAIDA, que contem sim ou não
-  base_combinada2$SELECAO_MOTIVO_SAIDA <- ifelse(base_combinada2$COBRANCA >= 21 & base_combinada2$COBRANCA <= 28, "não", "sim")
+  dados$SELECAO_MOTIVO_SAIDA <- ifelse(
+    dados$COBRANCA >= 21 & dados$COBRANCA <= 28,
+    "não", "sim")
 
-  dados = base_combinada2 %>% dplyr::select(
+  #Converte as colunas para inteiro
+  dados = dados %>% dplyr::mutate(
+    CO_GRUPO_PROC = as.integer(CO_GRUPO_PROC),
+    TOTAL_CIRURGIAS_APRESENTADAS = as.integer(TOTAL_CIRURGIAS_APRESENTADAS))
+
+  dados = dados %>% dplyr::select(
     "TIPO_AIH",
     "N_AIH",
     "ANO_CMPT",
@@ -114,6 +120,9 @@ get_data_SIH <- function(
     "ESPEC",
     "MARCA_UTI",
     "UTI_MES_TO")
+
+  names(dados)[3] = "ano"
+  names(dados)[4] = "mes"
 
   return(dados)
 }

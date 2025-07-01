@@ -50,18 +50,24 @@ equipamentos <-
       state_abbr = estados
     )
 
-    #Renomeando o nome da coluna
-    names(data_cnes)[4] <- 'Tipo_Equipamento'
-    names(data_cnes)[5] <- 'Cod_Equipamento'
-
     #Cria a coluna da quantidade de equipamentos em nao uso
-    data_cnes <- data_cnes %>% dplyr::mutate(QT_N_USO = QT_EXIST - QT_USO)
+    data_cnes <- data_cnes %>%
+      dplyr::mutate(QT_N_USO = QT_EXIST - QT_USO)
 
     #ADD colunas com os rotulos das variaveis categoricas.
     if(labels){
       data_cnes <- labels(data_cnes,'equipamentos')
       data_cnes <- labels(data_cnes,'cnes')
     }
+
+    #Converte as colunas para inteiro
+    data_cnes <- data_cnes %>%
+      dplyr::mutate(
+        dplyr::across(
+          c(QT_N_USO,cod_tipo_equipamento,cod_equipamento),
+          as.integer
+        )
+      )
 
     return(data_cnes)
 }

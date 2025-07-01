@@ -14,22 +14,25 @@
 create_numerador_denominador <- function(data_SIH, data_CNES) {
   `%>%` <- dplyr::`%>%`
 
-  especialidade_leito =
-    c("51","52","74","75","76","77","78","79","80","81","82","83","85")
-  partos = c("0411010026","0411010034","0411010042",
-             "0310010039","0310010047","0310010055")
-  partos_cesareos = c("0411010026","0411010034","0411010042")
+  especialidade_leito <-
+    c(51,52,74,75,76,77,78,79,80,81,82,83,85)
 
+  partos <- c("0411010026","0411010034","0411010042",
+              "0310010039","0310010047","0310010055")
+
+  partos_cesareos <- c("0411010026","0411010034","0411010042")
+
+  #Base data_SIH ----------------------------
+  #Cria alguns indicadores absolutos
   output = data_SIH %>%
-    dplyr::mutate(
-      dplyr::across(c(CO_GRUPO_PROC, ESPEC, MARCA_UTI), as.numeric)
-    ) %>%
     dplyr::filter(ESPEC %in% c(1,2,3,4,5,6,7,87)) %>%
-    dplyr::group_by(ANO_CMPT, MES_CMPT, CNES) %>%
+    dplyr::group_by(ano, mes, CNES) %>%
     dplyr::summarise(
+
       #i_tempo_medio_permanencia_hospitalar
       num_dias_perman_hosp = sum(DIAS_PERM, na.rm = TRUE),
       num_motivos_saida_hosp = sum(SELECAO_MOTIVO_SAIDA == 'sim', na.rm = TRUE),
+
       #i_tempo_medio_permanencia_clinica
       num_dias_perman_clinica =
         sum(DIAS_PERM[CO_GRUPO_PROC == 3], na.rm = TRUE),
@@ -44,8 +47,9 @@ create_numerador_denominador <- function(data_SIH, data_CNES) {
       .groups = "keep"
     )
 
+  #Cria outros indicadores absolutos
   output2 = data_SIH %>%
-    dplyr::group_by(ANO_CMPT, MES_CMPT, CNES) %>%
+    dplyr::group_by(ano, mes, CNES) %>%
     dplyr::summarise(
       #i_taxa_de_partos_cesareos
       num_partos_cesareos = sum(PROC_REA %in% partos_cesareos, na.rm = TRUE),
@@ -58,20 +62,27 @@ create_numerador_denominador <- function(data_SIH, data_CNES) {
       #Numero de Cirurgias Apresentadas por HUF
       N_CIRURGIAS_APRE = sum(TOTAL_CIRURGIAS_APRESENTADAS[CO_GRUPO_PROC == "4"],
                              na.rm = TRUE),
+
       #Numero de Internacoes Hospitalares por HUF
       N_Internacoes_H = length(TIPO_AIH),
       .groups = "keep"
     )
 
+  #Base data_CNES ----------------------------
+  #Cria outros indicadores absolutos
   output_cnes = data_CNES %>%
-    dplyr::group_by(ANO_CMPT, MES_CMPT, CNES) %>%
+    dplyr::group_by(ano, mes, CNES) %>%
     dplyr::summarise(
       #i_taxa_ocupacao_UTI
-      N_leitos_UTI =
-        sum(QT_EXIST[CODLEITO %in% especialidade_leito], na.rm = TRUE),
+      N_leitos_UTI = sum(
+        QT_EXIST[cod_especialidade_leito %in% especialidade_leito],
+        na.rm = TRUE),
 
       #i_taxa_ocupacao_H, i_giro_de_leito
-      N_leitos_hosp_sem_leitos_hosp_dia = sum(QT_EXIST[TP_LEITO != "7"], na.rm = TRUE),
+      N_leitos_hosp_sem_leitos_hosp_dia = sum(
+        QT_EXIST[cod_tipo_leito != 7],
+        na.rm = TRUE),
+
       .groups = "keep"
     ) %>%
     dplyr::mutate(
@@ -79,9 +90,10 @@ create_numerador_denominador <- function(data_SIH, data_CNES) {
       N_leitos_UTI = dplyr::na_if(N_leitos_UTI, 0)
     )
 
+  #Join das Base ----------------------------
   output = output %>%
-    dplyr::left_join(output2, by = c("ANO_CMPT", "MES_CMPT", "CNES")) %>%
-    dplyr::left_join(output_cnes, by = c("ANO_CMPT", "MES_CMPT", "CNES"))
+    dplyr::left_join(output2, by = c("ano", "mes", "CNES")) %>%
+    dplyr::left_join(output_cnes, by = c("ano", "mes", "CNES"))
 
   return(output)
 }

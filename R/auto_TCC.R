@@ -20,7 +20,7 @@
 #' \dontrun{
 #'   auto_TCC(
 #'     db_name = "postgres",
-#'     host = "teste-tcc.postgres.database.azure.com",
+#'     host = "db-tcc.postgres.database.azure.com",
 #'     port = "5432",
 #'     user = "gustavo",
 #'     password = "-",
@@ -125,7 +125,7 @@ auto_TCC = function(
 
     indicadores = dplyr::ungroup(indicadores)
 
-    #Remove as colunas que sao indicadores
+    #Remove as colunas que sao indicadores relativos
     num_den = indicadores %>% dplyr::select(
       -c(
         "i_taxa_de_cesarea",

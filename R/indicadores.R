@@ -24,10 +24,10 @@ indicadores <- function(data_SIH,data_CNES,labels_CNES=TRUE){
   `%>%` <- dplyr::`%>%`
 
   #Cria as variaveis que serao utilizadas no calculo dos indicadores
-  data = create_numerador_denominador(data_SIH, data_CNES)
+  dados = create_numerador_denominador(data_SIH, data_CNES)
 
   #Realiza o calculo dos indicadores
-  indicadores = data %>%
+  indicadores = dados %>%
     dplyr::summarise(
       i_taxa_de_cesarea = (num_partos_cesareos / num_partos_total) * 100,
       i_taxa_ocupacao_H =
@@ -48,8 +48,20 @@ indicadores <- function(data_SIH,data_CNES,labels_CNES=TRUE){
     indicadores = labels(indicadores,'cnes')
   }
 
-  tabela_indicadores_num_den =
-    dplyr::left_join(indicadores, data, by = c("ANO_CMPT", "MES_CMPT", "CNES"))
+  #Cria uma base com as colunas dos numeradores, denominadores e indicadores
+  dados = dplyr::left_join(
+    indicadores, dados,
+    by = c("ano", "mes", "CNES")) %>%
+  dplyr::ungroup()
+
+  dados <- dados %>%
+    dplyr::mutate(
+      #Add um 0 entre ano e mes se mes tiver só um caracter
+      mes_formatado = stringr::str_pad(mes, width = 2, side = "left", pad = "0"),
+      data = as.integer(paste0(ano, mes_formatado))
+    ) %>%
+    dplyr::relocate(data, .before = ano) %>%
+    dplyr::select(-mes_formatado)
 
   #Salva a base em um diretorio
   # write.csv(
@@ -62,5 +74,5 @@ indicadores <- function(data_SIH,data_CNES,labels_CNES=TRUE){
   # if (dir.exists(here::here("data-raw"))) {
   #   unlink(here::here("data-raw"), recursive = TRUE)
   # }
-  return(tabela_indicadores_num_den)
+  return(dados)
 }

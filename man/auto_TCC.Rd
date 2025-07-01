@@ -48,7 +48,7 @@ Cria as tabelas de Leitos, Habilitacoes, Equipamentos e do Numerador/Denominador
 \dontrun{
   auto_TCC(
     db_name = "postgres",
-    host = "teste-tcc.postgres.database.azure.com",
+    host = "db-tcc.postgres.database.azure.com",
     port = "5432",
     user = "gustavo",
     password = "-",
