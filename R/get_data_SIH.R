@@ -79,8 +79,8 @@ get_data_SIH <- function(
     dplyr::summarise(sum_SP_QT_PROC = sum(SP_QT_PROC))
 
   #consolidacao das informacoes-----
-  data_rd$TIPO_AIH <- "Aprovada"
-  data_rj$TIPO_AIH <- "Rejeitada"
+  data_rd$TIPO_AIH <- 1 #"Aprovada"
+  data_rj$TIPO_AIH <- 2 #"Rejeitada"
   dados <- rbind(data_rd,data_rj)
 
   #Cria a coluna TOTAL_CIRURGIAS_APRESENTADAS a partir da base data_cirurgias
@@ -98,16 +98,27 @@ get_data_SIH <- function(
   #cria coluna SELECAO_MOTIVO_SAIDA, que contem sim ou não
   dados$SELECAO_MOTIVO_SAIDA <- ifelse(
     dados$COBRANCA >= 21 & dados$COBRANCA <= 28,
-    "não", "sim")
+    2, 1) #sim=1, não=2
 
   #Converte as colunas para inteiro
-  dados = dados %>% dplyr::mutate(
-    CO_GRUPO_PROC = as.integer(CO_GRUPO_PROC),
-    TOTAL_CIRURGIAS_APRESENTADAS = as.integer(TOTAL_CIRURGIAS_APRESENTADAS))
+  dados <- dados %>%
+    dplyr::mutate(dplyr::across(
+      c(CO_GRUPO_PROC, TOTAL_CIRURGIAS_APRESENTADAS, TIPO_AIH, SELECAO_MOTIVO_SAIDA),
+      as.integer
+    ))
+
+
+  dados <- dados %>%
+    dplyr::mutate(
+      #Add um 0 entre ano e mes se mes tiver só um caracter
+      mes_formatado = stringr::str_pad(MES_CMPT, width = 2, side = "left", pad = "0"),
+      data = as.integer(paste0(ANO_CMPT, mes_formatado))
+    )
 
   dados = dados %>% dplyr::select(
     "TIPO_AIH",
     "N_AIH",
+    "data",
     "ANO_CMPT",
     "MES_CMPT",
     "PROC_REA",
@@ -121,8 +132,22 @@ get_data_SIH <- function(
     "MARCA_UTI",
     "UTI_MES_TO")
 
-  names(dados)[3] = "ano"
-  names(dados)[4] = "mes"
+  #Renomear as colunas
+  dados <- dados %>%
+    dplyr::rename(
+      ano = ANO_CMPT,
+      mes = MES_CMPT,
+      procedimento_realizado = PROC_REA,
+      dias_permanencia = DIAS_PERM,
+      cod_grupo_procedimento = CO_GRUPO_PROC,
+      motivo_saida_ou_permanencia = COBRANCA,
+      especialidade_leito = ESPEC,
+      tipo_uti_usada = MARCA_UTI,
+      dias_uti_no_mes = UTI_MES_TO
+    )
+
+  #Nome das colunas para minusculo
+  names(dados) <- tolower(names(dados))
 
   return(dados)
 }

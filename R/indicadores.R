@@ -51,7 +51,7 @@ indicadores <- function(data_SIH,data_CNES,labels_CNES=TRUE){
   #Cria uma base com as colunas dos numeradores, denominadores e indicadores
   dados = dplyr::left_join(
     indicadores, dados,
-    by = c("ano", "mes", "CNES")) %>%
+    by = c("ano", "mes", "cnes")) %>%
   dplyr::ungroup()
 
   dados <- dados %>%

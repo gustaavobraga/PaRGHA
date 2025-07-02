@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   dados = get_data_CNES(
+#'   data_CNES = get_data_CNES(
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,

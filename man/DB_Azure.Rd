@@ -17,7 +17,7 @@ DB_Azure(db_name, host, port, user, password, tabela, data)
 
 \item{password}{String. Senha do usuario para acessa o banco}
 
-\item{tabela}{String. Nome da tabela do banco (leitos, habilitacao, equipamento
+\item{tabela}{String. Nome da tabela do banco (data_aih, leitos, habilitacao, equipamento
 s,numerador_denominador).}
 
 \item{data}{DataFrame. Dados que serao inseridos na tabela.}

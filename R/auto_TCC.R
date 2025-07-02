@@ -86,18 +86,24 @@ auto_TCC = function(
     rm(equipamentos)
     gc()
 
-    #>Numerador Denominador -------------------
-    #Obtem os dados do SIH
-    cat("\nNumerador Denominador:\n")
-    data_SIH = get_data_SIH(year_start = year_start,
+    #>Data_aih -------------------
+    cat("\nData_aih:\n")
+    data_aih = get_data_SIH(year_start = year_start,
                             month_start = month_start,
                             year_end = year_end,
                             month_end = month_end,
                             save_path = save_path)
 
+    #Armazena os dados no banco de dados
+    DB_Azure(db_name, host, port, user, password, "data_aih", data_aih)
+
     #Apaga a pasta temporaria com os dados do SIH
     unlink(fs::path(tempdir(), "file_DBC"),
            recursive = TRUE)
+
+    #>Numerador Denominador -------------------
+    #Obtem os dados do SIH
+    cat("\nNumerador Denominador:\n")
 
     state_abbr = c(
       "PE","SE","BA","MS","DF","RJ","MG","AL","AM",
@@ -119,7 +125,7 @@ auto_TCC = function(
 
     #Cria um DF com as colunas dos numeradores,
     #denominadores e dos indicadores
-    indicadores = indicadores(data_SIH = data_SIH,
+    indicadores = indicadores(data_SIH = data_aih,
                               data_CNES = data_CNES,
                               labels_CNES = FALSE)
 
@@ -141,7 +147,7 @@ auto_TCC = function(
     #Armazena os dados no banco de dados
     DB_Azure(db_name, host, port, user, password, "numerador_denominador", num_den)
 
-    rm(data_CNES, data_SIH, indicadores, num_den, state_abbr)
+    rm(data_CNES, data_aih, indicadores, num_den, state_abbr)
     gc()
   })
   cat("Tempo de execução da função auto_TCC:",round(tempo_inicio[3]/60,4), "minutos\n")
