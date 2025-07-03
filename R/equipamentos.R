@@ -54,6 +54,7 @@ equipamentos <-
     data_cnes <- data_cnes %>%
       dplyr::mutate(QT_N_USO = QT_EXIST - QT_USO)
 
+    names(data_cnes)[names(data_cnes) == "CNES"] <- "cnes"
     #ADD colunas com os rotulos das variaveis categoricas.
     if(labels){
       data_cnes <- labels(data_cnes,'equipamentos')

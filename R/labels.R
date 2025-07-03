@@ -24,7 +24,7 @@ labels = function(data, type_data){
     data = data %>%
       dplyr::mutate(
         nome_CNES = dplyr::case_match(
-          CNES,
+          cnes,
           "0" ~ NA,
           "0000396" ~ "HC da Univ. Federal de Pernambuco (HC-UFPE)",
           "0002534" ~ "HU da Universidade Federal de Sergipe (HU-UFS)",
@@ -69,7 +69,7 @@ labels = function(data, type_data){
           "5586348" ~ "HU da Univ. Federal de S\u00e3o Carlos (HU-Ufscar)",
           "6042414" ~ "HU da Univ. Fed. Vale do S\u00e3o Francisco (HU-Univasf)",
           "6568343" ~ "Hospital Universit\u00e1rio de Lagarto (HUL-UFS)",
-          .default = CNES
+          .default = cnes
         )
       ) %>% dplyr::relocate(nome_CNES, .before = 4)
   }

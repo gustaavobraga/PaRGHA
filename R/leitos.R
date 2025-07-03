@@ -17,7 +17,7 @@
 #'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
-#'     month_end = 2,
+#'     month_end = 1,
 #'     labels = TRUE
 #'  )
 #' }
@@ -50,10 +50,11 @@ leitos <-
   #Junta com a tabela principal e remove colunas desnecessárias
   #data_cnes <- data_cnes %>% dplyr::filter(TP_LEITO!="7")
 
+  names(data_cnes)[names(data_cnes) == "CNES"] <- "cnes"
   #ADD colunas com os rotulos das variaveis categoricas.
   if(labels){
     data_cnes <- labels(data_cnes,'leitos')
-    data_cnes <- labels(data_cnes,'cneS ')
+    data_cnes <- labels(data_cnes,'cnes')
   }
 
   #Cria a coluna qt_exist_uti
