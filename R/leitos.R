@@ -74,6 +74,8 @@ leitos <-
         as.integer
       )
     )
+  #Coloca o nome das colunas em minusculo
+  names(data_cnes) <- tolower(names(data_cnes))
 
   return(data_cnes)
 }

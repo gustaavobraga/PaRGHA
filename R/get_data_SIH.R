@@ -112,13 +112,13 @@ get_data_SIH <- function(
     dplyr::mutate(
       #Add um 0 entre ano e mes se mes tiver só um caracter
       mes_formatado = stringr::str_pad(MES_CMPT, width = 2, side = "left", pad = "0"),
-      data = as.integer(paste0(ANO_CMPT, mes_formatado))
+      key_data = as.integer(paste0(ANO_CMPT, mes_formatado))
     )
 
   dados = dados %>% dplyr::select(
     "TIPO_AIH",
     "N_AIH",
-    "data",
+    "key_data",
     "ANO_CMPT",
     "MES_CMPT",
     "PROC_REA",
@@ -140,8 +140,8 @@ get_data_SIH <- function(
       procedimento_realizado = PROC_REA,
       dias_permanencia = DIAS_PERM,
       cod_grupo_procedimento = CO_GRUPO_PROC,
-      motivo_saida_ou_permanencia = COBRANCA,
-      especialidade_leito = ESPEC,
+      cod_motivo_saida_ou_permanencia = COBRANCA,
+      cod_especialidade_leito = ESPEC,
       tipo_uti_usada = MARCA_UTI,
       dias_uti_no_mes = UTI_MES_TO
     )

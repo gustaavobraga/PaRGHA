@@ -4,10 +4,10 @@
 \alias{labels}
 \title{Adiciona rotulos descritivos a partir de colunas de codigos}
 \usage{
-labels(data, type_data)
+labels(dados, type_data)
 }
 \arguments{
-\item{data}{DataFrame.}
+\item{dados}{DataFrame.}
 
 \item{type_data}{String. O tipo da base de dados do CNES que sera baixado. Valores aceitos ("cnes", "leitos", "equipamentos", "habilitacao").}
 }
@@ -19,7 +19,7 @@ Cria colunas de rotulos associada a colunas de codigos.
 }
 \examples{
 \dontrun{
-  data = labels(data, "cnes" )
+  dados = labels(dados, "cnes")
 }
 
 }

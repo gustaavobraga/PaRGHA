@@ -25,7 +25,7 @@ create_numerador_denominador <- function(data_SIH, data_CNES) {
   #Base data_SIH ----------------------------
   #Cria alguns indicadores absolutos
   output = data_SIH %>%
-    dplyr::filter(especialidade_leito %in% c(1,2,3,4,5,6,7,87)) %>%
+    dplyr::filter(cod_especialidade_leito %in% c(1,2,3,4,5,6,7,87)) %>%
     dplyr::group_by(ano, mes, cnes) %>%
     dplyr::summarise(
 

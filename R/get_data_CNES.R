@@ -55,7 +55,7 @@ get_data_CNES <-
       lubridate::ym(stringr::str_glue("{year_end}-{month_end}"))
 
     nome_colunas <- c(
-      data = "COMPETEN",
+      key_data = "COMPETEN",
       ano = "ANO_CMPT",
       mes = "MES_CMPT",
       cod_tipo_leito = "TP_LEITO",

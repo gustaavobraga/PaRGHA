@@ -58,10 +58,13 @@ indicadores <- function(data_SIH,data_CNES,labels_CNES=TRUE){
     dplyr::mutate(
       #Add um 0 entre ano e mes se mes tiver só um caracter
       mes_formatado = stringr::str_pad(mes, width = 2, side = "left", pad = "0"),
-      data = as.integer(paste0(ano, mes_formatado))
+      key_data = as.integer(paste0(ano, mes_formatado))
     ) %>%
-    dplyr::relocate(data, .before = ano) %>%
+    dplyr::relocate(key_data, .before = ano) %>%
     dplyr::select(-mes_formatado)
+
+  #Coloca o nome das colunas em minusculo
+  names(dados) <- tolower(names(dados))
 
   #Salva a base em um diretorio
   # write.csv(

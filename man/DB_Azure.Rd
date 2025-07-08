@@ -4,7 +4,7 @@
 \alias{DB_Azure}
 \title{Escreve em um Banco de Dados Remoto}
 \usage{
-DB_Azure(db_name, host, port, user, password, tabela, data)
+DB_Azure(db_name, host, port, user, password, tabela, data, tab_labels = NULL)
 }
 \arguments{
 \item{db_name}{String. Nome do banco de dados.}
@@ -17,10 +17,11 @@ DB_Azure(db_name, host, port, user, password, tabela, data)
 
 \item{password}{String. Senha do usuario para acessa o banco}
 
-\item{tabela}{String. Nome da tabela do banco (data_aih, leitos, habilitacao, equipamento
-s,numerador_denominador).}
+\item{tabela}{String. Nome da tabela do banco (data_aih, leitos, habilitacao, equipamentos,numerador_denominador).}
 
 \item{data}{DataFrame. Dados que serao inseridos na tabela.}
+
+\item{tab_labels}{String. Nome da tabela de labels. O padao e NULL}
 }
 \description{
 Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerador_denominador)
@@ -34,7 +35,8 @@ Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerad
     user = "gustavo",
     password = "-",
     tabela = "leitos",
-    data = data
+    data = data,
+    tab_labels = NULL
   )
 }
 

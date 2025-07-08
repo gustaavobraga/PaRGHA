@@ -14,6 +14,8 @@ auto_TCC(
   month_start,
   year_end,
   month_end,
+  cloud = FALSE,
+  save_Rdata_to_path = "./",
   save_path = tempdir()
 )
 }
@@ -36,7 +38,11 @@ auto_TCC(
 
 \item{month_end}{numeric. Mês final para o download dos dados, no formato mm.}
 
-\item{save_path}{String. Diretório onde os arquivos DBC serão salvos. O padrão é tempdir().}
+\item{cloud}{Logical. O padrao é FALSE. Se TRUE, salva as tabelas no DW; caso contrario, cria um RData com todas as tabelas}
+
+\item{save_Rdata_to_path}{String.Caminho para o diretorio onde deve ser salvo o arquivo RData que contém todas as tabelas do BI. O padrao e o diretorio atual "./".}
+
+\item{save_path}{String. Diretorio onde os arquivos DBC serao salvos. O padrao é tempdir().}
 }
 \value{
 Um DataFrame com os indicadores
@@ -55,7 +61,9 @@ Cria as tabelas de Leitos, Habilitacoes, Equipamentos e do Numerador/Denominador
     year_start = 2021,
     month_start = 1,
     year_end = 2021,
-    month_end = 1
+    month_end = 1,
+    cloud = FALSE,
+    save_Rdata_to_path = "./"
   )
 }
 
