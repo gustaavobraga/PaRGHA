@@ -16,6 +16,6 @@ files_chunks, uma lista de vetores de strings.
 Uma heurística de empacotamento para alocar arquivos em grupos com limite de tamanho.
 }
 \examples{
-\dontrun{chunk( files_name = files_name)}
+\dontrun{chunk_fast( files_name = files_name)}
 
 }

@@ -7,7 +7,7 @@
 #'
 #' @return files_chunks, uma lista de vetores de strings.
 #'
-#' @examples \dontrun{chunk( files_name = files_name)}
+#' @examples \dontrun{chunk_fast( files_name = files_name)}
 #'
 #' @export
 chunk_fast <- function(files_name) {

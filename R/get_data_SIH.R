@@ -15,7 +15,7 @@
 #' @examples
 #' \dontrun{
 #'   data_SIH = get_data_SIH(
-#'     year_start = 2021,
+#'     year_start = 2024,
 #'     month_start = 1,
 #'     year_end = 2024,
 #'     month_end = 12,
@@ -39,12 +39,50 @@ get_data_SIH <- function(
   )
 
   #Download dos DBC (SIH-RD,SIH-RJ e SIH-SP)
-  download_data(year_start,
-                month_start,
-                year_end,
-                month_end,
-                estados,
-                tempdir())
+    #Remove arquivos DBC antigos antes de iniciar o download
+    SIS = c("RD", "RJ", "SP")
+    dirs <- fs::path(save_path, "file_DBC", glue::glue("SIH-{SIS}"))
+    purrr::walk(dirs, ~{
+      if (dir.exists(.x)) {
+        unlink(list.files(.x, full.names = TRUE), recursive = TRUE)
+      }
+    })
+
+    #Obtendo as bases dbc do RD
+    tempo_inicio_RD <- system.time({
+      download_dbc("SIH-RD",
+                   year_start,
+                   month_start,
+                   year_end,
+                   month_end,
+                   estados,
+                   save_path)
+    })
+    cat("Tempo para baixar os dados do RD:", round(tempo_inicio_RD[3]/60,4), "minutos\n")
+
+    #Obtendo as bases dbc do RJ
+    tempo_inicio_RJ <- system.time({
+      download_dbc("SIH-RJ",
+                   year_start,
+                   month_start,
+                   year_end,
+                   month_end,
+                   estados,
+                   save_path)
+    })
+    cat("Tempo para baixar os dados do RJ:", round(tempo_inicio_RJ[3]/60,4), "minutos\n")
+
+    #Obtendo as bases dbc do SP
+    tempo_inicio_SP <- system.time({
+      download_dbc("SIH-SP",
+                   year_start,
+                   month_start,
+                   year_end,
+                   month_end,
+                   estados,
+                   save_path)
+    })
+    cat("Tempo para baixar os dados do SP:", round(tempo_inicio_SP[3]/60,4), "minutos\n")
 
   # #Ler os arquivos DBC; Filtra os estabelecimentos da EBSERH e seleciona as colunas necessárias
   data_rd = load_data("SIH-RD")

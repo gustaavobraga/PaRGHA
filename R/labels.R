@@ -821,8 +821,8 @@ labels = function(dados, type_data){
   }
   else if (type_data == "d_calendario"){
     # Defina o intervalo de datas desejado
-    data_inicio <- as.Date("2019-01-01")
-    data_fim <- as.Date("2025-12-01")
+    data_inicio <- dados[1]
+    data_fim <- dados[2]
 
     # Cria a tabela d_calendario
     dados <-

@@ -16,27 +16,27 @@
 #' @param save_Rdata_to_path String.Caminho para o diretorio onde deve ser salvo o arquivo RData que contém todas as tabelas do BI. O padrao e o diretorio atual "./".
 #' @param save_path String. Diretorio onde os arquivos DBC serao salvos. O padrao é tempdir().
 #'
-#' @return Um DataFrame com os indicadores
+#' @return Se cloud = FALSE, a função salva um arquivo .RData com o nome tabelas_do_Painel no diretório especificado pelo argumento save_Rdata_to_path.
 #'
 #' @examples
 #' \dontrun{
-#'   auto_TCC(
+#'   auto_PaRGHA(
 #'     db_name = "postgres",
-#'     host = "db-tcc.postgres.database.azure.com",
-#'     port = "5432",
+#'     host = "teste.postgres.database.azure.com",
+#'     port = "1234",
 #'     user = "gustavo",
 #'     password = "-",
 #'     year_start = 2021,
 #'     month_start = 1,
 #'     year_end = 2021,
-#'     month_end = 1,
+#'     month_end = 2,
 #'     cloud = FALSE,
 #'     save_Rdata_to_path = "./"
 #'   )
 #' }
 #'
 #' @export
-auto_TCC = function(
+auto_PaRGHA = function(
     db_name,
     host,
     port,
@@ -201,6 +201,15 @@ auto_TCC = function(
 
     #>Salvar todas as tabelas em um Rdata----
     if(!cloud){
+      #Datas para criar a tabela d_calendario
+      publication_date_start <-
+        lubridate::ym(stringr::str_glue("{year_start}-{month_start}"))
+      publication_date_end <-
+        lubridate::ym(stringr::str_glue("{year_end}-{month_end}"))
+      datas = c(publication_date_start,
+                publication_date_end)
+
+
       #Obtendo as tabelas dos labels
       tab_grupo_procedimentos <- labels(type_data="tab_grupo_procedimentos")
       tab_cnes <- labels(type_data="tab_cnes")
@@ -210,11 +219,11 @@ auto_TCC = function(
       tab_tipo_leito <- labels(type_data="tab_tipo_leito")
       tab_especialidade_leito <- labels(type_data="tab_especialidade_leito")
       tab_motivo_saida_permanencia <- labels(type_data="tab_motivo_saida_permanencia")
-      d_calendario <- labels(type_data="d_calendario")
+      d_calendario <- labels(datas, type_data="d_calendario")
       name_indicadores <- labels(type_data="name_indicadores")
 
       # Local onde vai ser salvo o Rdata
-      save_Rdata_to_path <- fs::path(save_Rdata_to_path, "tabelas_BI.RData")
+      save_Rdata_to_path <- fs::path(save_Rdata_to_path, "tabelas_do_Painel.RData")
 
       # Listar todos os arquivos .rds no diretório
       arquivos_rds <- list.files(output_dir, pattern = "\\.rds$",
@@ -248,5 +257,5 @@ auto_TCC = function(
       save(list = table_bi, file = save_Rdata_to_path)
     }
   })
-  cat("Tempo de execução da função auto_TCC:",round(tempo_inicio[3]/60,4), "minutos\n")
+  cat("Tempo de execução da função auto_PaRGHA:",round(tempo_inicio[3]/60,4), "minutos\n")
 }

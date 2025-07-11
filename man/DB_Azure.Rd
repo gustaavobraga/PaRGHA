@@ -30,7 +30,7 @@ Escreve em uma das tabelas a seguir: (leitos, habilitacao, equipamentos, numerad
 \dontrun{
   DB_Azure(
     db_name = "postgres",
-    host = "teste-tcc.postgres.database.azure.com",
+    host = "teste.postgres.database.azure.com",
     port = "5432",
     user = "gustavo",
     password = "-",
