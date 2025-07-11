@@ -22,7 +22,7 @@ Além disso, o pacote `read.dbc` também deve ser instalado, pois ele é utiliza
 Abaixo está o código para instalar o pacote `read.dbc`:
 
 ```r
-devtools::install_github("danicat/read.dbc")
+remotes::install_github("danicat/read.dbc")
 ```
 Por fim, utilize o código abaixo para instalar o pacote PaRGHA:
 ```r
