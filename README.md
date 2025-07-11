@@ -15,7 +15,7 @@ Para uma descrição detalhada de cada um desses sistemas, recomenda-se a leitur
 
 
 # Instalação
-Para instalar o pacote **TCC**, é necessário que o pacote `remotes` já esteja instalado no seu ambiente R.
+Para instalar o pacote **PaRGHA**, é necessário que o pacote `remotes` já esteja instalado no seu ambiente R.
 
 Além disso, o pacote `read.dbc` também deve ser instalado, pois ele é utilizado para a leitura dos arquivos no formato `.dbc`, disponibilizados pelo DataSUS.
 
@@ -26,12 +26,10 @@ devtools::install_github("danicat/read.dbc")
 ```
 Por fim, utilize o código abaixo para instalar o pacote PInGHosP:
 ```r
-remotes::install_github(repo = "gustaavobraga/TCC",
-                        username = "gustaavobraga",
-                        auth_token = "")
+remotes::install_github("gustaavobraga/PaRGHA")
 ```
 # Funções
-- `auto_tcc()` função principal do pacote, responsável por executar todas as etapas do processo, incluindo o download dos dados e a criação das tabelas de indicadores e de labels exigidas pelo painel. Todas as tabelas geradas são salvas em um arquivo .RData no diretório local do usuário ("./
+- `auto_PaRGHA()` função principal do pacote, responsável por executar todas as etapas do processo, incluindo o download dos dados e a criação das tabelas de indicadores e de labels exigidas pelo painel. Todas as tabelas geradas são salvas em um arquivo .RData no diretório local do usuário ("./
   ").
 
 As funções a seguir podem ser utilizadas caso o usuário deseje obter cada uma das tabelas individualmente.
