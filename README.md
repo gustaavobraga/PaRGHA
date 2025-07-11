@@ -1,4 +1,4 @@
-# PInGHosP - Pacote de Indicadores da Gestão Hospitalar
+# PaRGHA - Pacote R para Gestão Hospitalar Automatizado
 
 <!-- badges: start -->
 <!--[![R-CMD-check](https://github.com/rfsaldanha/microdatasus/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rfsaldanha/microdatasus/actions/workflows/R-CMD-check.yaml)-->
@@ -24,7 +24,7 @@ Abaixo está o código para instalar o pacote `read.dbc`:
 ```r
 devtools::install_github("danicat/read.dbc")
 ```
-Por fim, utilize o código abaixo para instalar o pacote PInGHosP:
+Por fim, utilize o código abaixo para instalar o pacote PaRGHA:
 ```r
 remotes::install_github("gustaavobraga/PaRGHA")
 ```
@@ -40,9 +40,9 @@ As funções a seguir podem ser utilizadas caso o usuário deseje obter cada uma
 
 # Exemplos
 ```r
-library(PInGHosP)
+library(PaRGHA)
 
-auto_PInGHosP(
+auto_PaRGHA(
   year_start = 2023,
   month_start = 10,
   year_end = 2024,
