@@ -43,10 +43,10 @@ As funções a seguir podem ser utilizadas caso o usuário deseje obter cada uma
 library(PaRGHA)
 
 auto_PaRGHA(
-  year_start = 2023,
-  month_start = 10,
+  year_start = 2024,
+  month_start = 1,
   year_end = 2024,
-  month_end = 2,
+  month_end = 1,
   cloud = FALSE,
   save_Rdata_to_path = "./"
 )
